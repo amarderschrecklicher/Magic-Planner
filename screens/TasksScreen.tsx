@@ -27,6 +27,7 @@ import CurrentDate from "../components/CurrentDate";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { CommonActions } from "@react-navigation/native";
 import * as Notifications from 'expo-notifications';
+import { Notification, NotificationResponse } from 'expo-notifications';
 import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
@@ -34,13 +35,13 @@ import SideButtons from "../components/SideButtons";
 export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
 
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-  const [kidName, setKidName] = useState(null);
-  const [maleKid, setMaleKid] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [notification, setNotification] = useState<Notification | null>(null);
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
+  const [kidName, setKidName] = useState("");
+  const [maleKid, setMaleKid] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [priorityTasks, setPriorityTasks] = useState(null);
   const [normalTasks, setNormalTasks] = useState(null);
   const [subTasks, setSubTasks] = useState(null);
@@ -63,45 +64,44 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       fetchData();
       
     });
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      const taskName = notification.request.content.body;
-      const id = notification.request.content.data.taskId;
-      setNotification(notification);
-      
+
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification: Notification) => {
+      const taskName = notification.request.content.body || undefined;
+      const id = notification.request.content.data.taskId as string;
+      setNotification(notification as Notification);
+
       Alert.alert(
         "Imaš novi task!",
         taskName,
         [{ text: "Pogledaj task", onPress: () => handleOKPress(id) }]
       );
-        
     });
     
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response: NotificationResponse) => {
       console.log(response);
     });
         
     return () => {
       unsubscribe;
+      if (notificationListener.current)
       Notifications.removeNotificationSubscription(notificationListener.current);
+      if (responseListener.current)
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  }, [navigation]);
 
   async function fetchData() {
     try {
       
-      const { name, gender, email, password } = await fetchAccount(accountID);
+      const employeeData = await fetchAccount(accountID);
 
-      if(name == undefined){
-        await AsyncStorage.removeItem("account")
-        navigation.navigate('Home', { accountID: 0 });
-      }
-      else{
-      setKidName(name);
-      setMaleKid(gender);
-      setEmail(email);
-      setPassword(password);
+      if(employeeData){
+
+      setKidName(employeeData.name);
+      setMaleKid(employeeData.gender);
+      setEmail(employeeData.email);
+      setPassword(employeeData.password);
 
       const setting = await fetchSettings(accountID);
       setSettings(setting);
@@ -126,8 +126,12 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       if(token == null || token == undefined)   
         addToken(expoPushToken,accountID,Device.modelName  || "")
       else if (expoPushToken!="")
-      updateToken(expoPushToken,accountID)
+        updateToken(expoPushToken,accountID)
 
+      }
+      else{
+        await AsyncStorage.removeItem("account")
+        navigation.navigate('Home', { accountID: 0 });
       }
     } catch (error) {
       navigation.navigate('Home', { accountID: 0 });

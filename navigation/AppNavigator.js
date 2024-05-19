@@ -17,7 +17,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const BottomNavigator = ({ route }:{route:any}) =>  {
+const BottomNavigator = ( route ) =>  {
 
   const { accountID } = route.params; 
 
@@ -47,7 +47,7 @@ const BottomNavigator = ({ route }:{route:any}) =>  {
   );
 };
 
-const AppNavigator = ({ accountID }:{ accountID:number }) => {
+const AppNavigator = (accountID) => {
     
   return (
         <Stack.Navigator >

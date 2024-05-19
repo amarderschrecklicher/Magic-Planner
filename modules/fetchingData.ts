@@ -11,19 +11,31 @@ import Task from "@/components/Task";
 const API_BASE_URL = "http://192.168.1.102:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
-export async function fetchAccount(accountID:number) {
+interface EmployeeData{
+  name: string,
+  gender: boolean,
+  email: string,
+  password: string,
+}
+
+export async function fetchAccount(accountID: number): Promise<{ name: string; gender: boolean; email: string; password: string } | undefined> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/child/${accountID}`
     );
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
     const data = await response.json();
     await signInWithEmailAndPassword(auth, data.email, data.password);
     console.log("Login success");
     return { name: data.name, gender: data.kidMale, email: data.email, password: data.password };
   } catch (error) {
-    console.error("Failed to fetch account in TasksScreen:", error); 
+    console.error("Failed to fetch account in TasksScreen:", error);
+    return undefined;
   }
 }
+
 
 export async function fetchTasks(accountID:number) {
   try {
