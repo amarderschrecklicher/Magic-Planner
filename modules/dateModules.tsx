@@ -10,12 +10,14 @@ export function getCurrentDate() {
   return [year, month, day].join("-");
 }
 
-export function todayTask(taskDate) {
+export function todayTask(taskDate:any) {
   if (taskDate == getCurrentDate()) return true;
   else return false;
 }
 
-export function compareTimes(a, b) {
+export function compareTimes(a:any, b:any) {
   if (a.dueTime > b.dueTime) return 1;
-  if (a.dueTime < b.dueTime) return -1;
+  else if (a.dueTime < b.dueTime) return -1;
+  
+  return 1;
 }

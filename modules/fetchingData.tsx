@@ -1,15 +1,17 @@
-import { todayTask, compareTimes } from "../modules/dateModules";
+import { todayTask, compareTimes } from "./dateModules";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../modules/firebase';
+import { auth } from './firebase';
+import { Platform } from "react-native";
+import Task from "@/components/Task";
 
 
 //const API_BASE_URL = "https://zavrsni-back.herokuapp.com";
 const API_BASE_URL = "http://192.168.1.102:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
-export async function fetchAccount(accountID) {
+export async function fetchAccount(accountID:number) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/child/${accountID}`
@@ -23,25 +25,25 @@ export async function fetchAccount(accountID) {
   }
 }
 
-export async function fetchTasks(accountID) {
+export async function fetchTasks(accountID:number) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/task/${accountID}`);
     const data = await response.json();
-    let priority = [];
-    let normal = [];
+    let priority: any[] =[];
+    let normal : any[] =[];
 
-    data.forEach((element) => {
+    data.forEach((element:any) => {
       if (!element.done && todayTask(element.dueDate)) {
         if (element.priority) priority.push(element);
         else if (!element.priority) normal.push(element);
       }
     });
 
-    priority.sort(function (a, b) {
+    priority.sort(function (a:any, b:any) {
       return compareTimes(a, b);
     });
 
-    normal.sort(function (a, b) {
+    normal.sort(function (a:any, b:any) {
       return compareTimes(a, b);
     });
 
@@ -51,7 +53,7 @@ export async function fetchTasks(accountID) {
   }
 }
 
-export async function fetchSubTasks(tasks) {
+export async function fetchSubTasks(tasks: string | any[]) {
   try {
     let temp = new Map();
 
@@ -67,7 +69,7 @@ export async function fetchSubTasks(tasks) {
   }
 }
 
-export async function fetchSettings(accountID) {
+export async function fetchSettings(accountID:number) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/account/settings/${accountID}`
@@ -80,7 +82,7 @@ export async function fetchSettings(accountID) {
   }
 }
 
-export async function updateFinishedSubTasks(id) {
+export async function updateFinishedSubTasks(id:number) {
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/sub/done/${id}`, {
       method: "PUT",
@@ -90,7 +92,7 @@ export async function updateFinishedSubTasks(id) {
   }
 }
 
-export async function updateFinishedTask(id) {
+export async function updateFinishedTask(id:number) {
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/done/${id}`, {
       method: "PUT",
@@ -106,15 +108,15 @@ export async function fetchStringCodes() {
   return data;
 }
 
-export async function fetchTokens(id) {
+export async function fetchTokens(id:number) {
   const response = await fetch(`${API_BASE_URL}/api/v1/token/${id}`);
   const data = await response.json();
-  const token = data.find(token => token.modelId == Device.modelName);
+  const token = data.find((token: { modelId: any; }) => token.modelId == Device.modelName);
   
   return {token}
 }
 
-export async function updateToken(newToken,id) {
+export async function updateToken(newToken:string,id:number) {
   try {
     await fetch(`${API_BASE_URL}/api/v1/token/update/${id}`, {
       method: "PUT", 
@@ -130,7 +132,7 @@ export async function updateToken(newToken,id) {
   }
 }
 
-export async function addToken(newToken,id,modelId) {
+export async function addToken(newToken:string,id:number,modelId:string) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/token/create`, {
       method: "POST",
