@@ -11,7 +11,7 @@ import SubTask from "../components/SubTask";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CurrentDate from "../components/CurrentDate";
 
-export default function SubTasksScreen({ navigation, route }) {
+export default function SubTasksScreen({navigation, route }:{navigation:any,route:any}) {
   const { task } = route.params;
   const { settings } = route.params;
   const { subTasks } = route.params;
@@ -23,9 +23,10 @@ export default function SubTasksScreen({ navigation, route }) {
 
   const sortSubTasks = () => {
     const temp = [...subTasks];
-    temp.sort(function (a, b) {
+    temp.sort(function (a:any, b:any) {
       if (a.done && !b.done) return 1;
       if (!a.done && b.done) return -1;
+      return 1
     });
     setSortedSubTasks(temp);
   };

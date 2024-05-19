@@ -12,7 +12,7 @@ import { database } from '../modules/firebase';
 import ChatHeader from '../components/ChatHeader';
 
 
-export default function ChatScreen( {navigation, route }) {
+export default function ChatScreen({navigation, route }:{navigation:any,route:any}) {
 
   const [messages, setMessages] = useState([]);
   const { email, sos, accountID } = route.params;

@@ -31,7 +31,8 @@ import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
 
-export default function TasksScreen({ navigation, route }) {
+export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
+
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -63,8 +64,8 @@ export default function TasksScreen({ navigation, route }) {
       
     });
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      taskName = notification.request.content.body;
-      id = notification.request.content.data.taskId;
+      const taskName = notification.request.content.body;
+      const id = notification.request.content.data.taskId;
       setNotification(notification);
       
       Alert.alert(
@@ -123,7 +124,7 @@ export default function TasksScreen({ navigation, route }) {
       console.log(expoPushToken)
 
       if(token == null || token == undefined)   
-        addToken(expoPushToken,accountID,Device.modelName)
+        addToken(expoPushToken,accountID,Device.modelName  || "")
       else if (expoPushToken!="")
       updateToken(expoPushToken,accountID)
 
@@ -180,7 +181,7 @@ export default function TasksScreen({ navigation, route }) {
     }
   };
 
-  const handleTaskPress = (task) => {
+  const handleTaskPress = (task:any) => {
     navigation.navigate("SubTasks", {
       task: task,
       settings: settings,
@@ -203,7 +204,7 @@ export default function TasksScreen({ navigation, route }) {
     });
   };
 
-  const handleOKPress = (task) =>{
+  const handleOKPress = (task:any) =>{
     onRefresh();
     //handleTaskPress(task);
     console.log("Notification acknowledged")

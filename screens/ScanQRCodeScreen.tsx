@@ -12,7 +12,7 @@ import { CameraView } from "expo-camera";
 import { CommonActions } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from "lottie-react-native";
-//import { fetchStringCodes } from "../modules/fetchingData";
+import { fetchStringCodes } from "../modules/fetchingData";
 
 export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const [scanned, setScanned] = useState(false);
@@ -26,8 +26,8 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   }, []);
 
   async function fetchCodes() {
-  //  const data = await fetchStringCodes();
-  //  setStringCodes(data);
+    const data = await fetchStringCodes();
+    setStringCodes(data);
   }
 
   const storeData = async (value:any) => {

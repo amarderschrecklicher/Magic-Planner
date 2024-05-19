@@ -4,7 +4,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ChatScreen from "../screens/ChatScreen";
 import HomeScreen from "../screens/HomeScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
@@ -15,20 +15,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-/*
-const BottomNavigator = ({ route }:{route:any}) => {
+const BottomNavigator = ({ route }:{route:any}) =>  {
 
-  const colorScheme = useColorScheme();
   const { accountID } = route.params; 
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
-      <Tabs.Screen 
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen 
         name="Tasks"
         component={TasksScreen}
         initialParams={{ accountID: accountID }}
@@ -39,7 +34,7 @@ const BottomNavigator = ({ route }:{route:any}) => {
           ),
         }} 
       />
-      <Tabs.Screen 
+      <Tab.Screen 
         name="Materijali" 
         component={MaterialsScreen}
         options={{
@@ -48,9 +43,9 @@ const BottomNavigator = ({ route }:{route:any}) => {
           ),
         }} 
       />
-    </Tabs>
+    </Tab.Navigator>
   );
-}* */
+};
 
 const AppNavigator = ({ accountID }:{ accountID:number }) => {
     
@@ -67,12 +62,7 @@ const AppNavigator = ({ accountID }:{ accountID:number }) => {
             component={ScanQRCodeScreen}
             options={{ title: "Scan", headerShown: false }}
           />
-        </Stack.Navigator>
-  );
-};
-
-
-    /*      <Stack.Screen
+          <Stack.Screen
             name="BottomNavigator"
             component={BottomNavigator}
             initialParams={{ accountID: accountID }}
@@ -81,6 +71,12 @@ const AppNavigator = ({ accountID }:{ accountID:number }) => {
               headerShown: false,
             }}
           />          
+        </Stack.Navigator>
+  );
+};
+
+
+    /*           
           <Stack.Screen
             name="SubTasks"
             component={SubTasksScreen}
