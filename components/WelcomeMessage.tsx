@@ -1,7 +1,8 @@
+import { SettingsData } from "@/modules/fetchingData";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function WelcomeMessage({ name, male, settings }) {
+export default function WelcomeMessage({ name, male, settings }: {name:string,male:Boolean,settings:SettingsData}) {
   if (!male)
     return (
       <View style={styles.welcomeBox}>

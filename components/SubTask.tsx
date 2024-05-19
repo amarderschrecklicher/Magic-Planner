@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Checkbox from "expo-checkbox";
-import { updateFinishedSubTasks } from "../modules/fetchingData";
+import { SettingsData, SubTaskData, updateFinishedSubTasks } from "../modules/fetchingData";
 
-export default function SubTask({ subTask, subTaskColor, settings }) {
+export default function SubTask({ subTask, subTaskColor, settings }:{subTask:SubTaskData,subTaskColor:string,settings:SettingsData}) {
   const [isChecked, setChecked] = useState(subTask.done);
   const [textLine, setTextLine] = useState(
     subTask.done ? "line-through" : "none"

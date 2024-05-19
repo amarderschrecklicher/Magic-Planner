@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const SideButtons = ({ onChatPress, onSOSPress }) => {
+const SideButtons = ({ onChatPress, onSOSPress }:  {onChatPress:any, onSOSPress:any}) => {
   
   return (
     <View style={styles.container}>
