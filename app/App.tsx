@@ -2,9 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import LoadingAnimation from "./components/LoadingAnimation";
-import { fetchFonts } from './modules/fontLoader';
-import AppNavigator from './navigation/AppNavigator';
+import LoadingAnimation from "../components/LoadingAnimation";
+import { fetchFonts } from '../modules/fontLoader';
+import AppNavigator from '../navigation/AppNavigator';
 import React from "react";
 
 export default function App() {
