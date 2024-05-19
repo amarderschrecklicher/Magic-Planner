@@ -1,7 +1,8 @@
 import { View, Text } from "react-native";
 import React from "react";
+import { SettingsData } from "@/modules/fetchingData";
 
-export default function CurrentDate({ settings }:{settings:any}) {
+export default function CurrentDate({ settings }:{settings:SettingsData}) {
   const date = new Date();
   const daniUSedmici = [
     "Nedjelja",

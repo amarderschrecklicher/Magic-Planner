@@ -21,7 +21,10 @@ import {
   fetchTokens,
   addToken,
   registerForPushNotificationsAsync,
-  updateToken
+  updateToken,
+  SettingsData,
+  SubTaskData,
+  TaskData
 } from "../modules/fetchingData";
 import CurrentDate from "../components/CurrentDate";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -31,6 +34,7 @@ import { Notification, NotificationResponse } from 'expo-notifications';
 import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
+
 
 export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
 
@@ -42,13 +46,12 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   const [maleKid, setMaleKid] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [priorityTasks, setPriorityTasks] = useState(null);
-  const [normalTasks, setNormalTasks] = useState(null);
-  const [subTasks, setSubTasks] = useState(null);
-  const [settings, setSettings] = useState({});
-  const { accountID } = route.params;
+  const [priorityTasks, setPriorityTasks] = useState<TaskData[] | null>(null);
+  const [normalTasks, setNormalTasks] = useState<TaskData[] | null>(null);
+  const [subTasks, setSubTasks] = useState<Map<string, SubTaskData[]> | null>(null);
+  const [settings, setSettings] = useState<SettingsData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { accountID } = route.params;
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -103,18 +106,24 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       setEmail(employeeData.email);
       setPassword(employeeData.password);
 
-      const setting = await fetchSettings(accountID);
-      setSettings(setting);
-      
-      const { data, priority, normal } = await fetchTasks(accountID);
-      setPriorityTasks(priority);
-      setNormalTasks(normal);
+      const settingsData = await fetchSettings(accountID);
 
-      const allSubTasks = await fetchSubTasks(data);
-      setSubTasks(allSubTasks);
+      if(settingsData)  
+        setSettings(settingsData);
+      
+      const tasksData = await fetchTasks(accountID);
+      
+      if(tasksData){
+        setPriorityTasks(tasksData.priority);
+        setNormalTasks(tasksData.normal);
+      }
+      const subtasksData = await fetchSubTasks(tasksData ? tasksData.data : []);
+
+      if(subtasksData)
+        setSubTasks(subtasksData);
 
       await registerForPushNotificationsAsync().then(token => {
-        if(token!="")
+        if(token && token!="")
           setExpoPushToken(token)
         }
       );
@@ -186,6 +195,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   };
 
   const handleTaskPress = (task:any) => {
+    if(subTasks)
     navigation.navigate("SubTasks", {
       task: task,
       settings: settings,
@@ -366,6 +376,14 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#3b5998',
+  },
   tasks: {
     marginBottom: 50,
     marginTop: 30,
