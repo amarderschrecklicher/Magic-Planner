@@ -55,7 +55,6 @@ const BottomNavigator = ({ route }:{route:any}) => {
 const AppNavigator = ({ accountID }:{ accountID:number }) => {
     
   return (
-      <NavigationContainer>
         <Stack.Navigator >
           <Stack.Screen
             name="Home"
@@ -69,7 +68,6 @@ const AppNavigator = ({ accountID }:{ accountID:number }) => {
             options={{ title: "Scan", headerShown: false }}
           />
         </Stack.Navigator>
-      </NavigationContainer>
   );
 };
 

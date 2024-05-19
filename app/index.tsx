@@ -29,13 +29,11 @@ export default function App() {
 
   }, []);
 
-  if (accountID == 0) return <LoadingAnimation />;
-  else {
     return (
       <>
         <StatusBar hidden />
         <AppNavigator accountID={accountID} />
       </>
     );
-  }
+
 }
