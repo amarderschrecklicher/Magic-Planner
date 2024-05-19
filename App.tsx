@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import LoadingAnimation from "./components/LoadingAnimation";
 import { fetchFonts } from './modules/fontLoader';
 import AppNavigator from './navigation/AppNavigator';
+import React from "react";
 
 export default function App() {
-  const [accountID, setAccountID] = useState(null);
+  const [accountID, setAccountID] = useState(0);
 
   const getData = async () => {
     try {
@@ -28,7 +29,7 @@ export default function App() {
 
   }, []);
 
-  if (accountID == null) return <LoadingAnimation />;
+  if (accountID == 0) return <LoadingAnimation />;
   else {
     return (
       <>

@@ -5,12 +5,12 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { NavigationContainer } from '@react-navigation/native';
-import ChatScreen from "./ChatScreen";
-import HomeScreen from "./HomeScreen";
-import MaterialsScreen from "./MaterialsScreen";
-import ScanQRCodeScreen from "./ScanQRCodeScreen";
-import TasksScreen from "./TasksScreen";
-import SubTasksScreen from "./SubTasksScreen";
+import ChatScreen from "../screens/ChatScreen";
+import HomeScreen from "../screens/HomeScreen";
+import MaterialsScreen from "../screens/MaterialsScreen";
+import ScanQRCodeScreen from "../screens/ScanQRCodeScreen";
+import TasksScreen from "../screens/TasksScreen";
+import SubTasksScreen from "../screens/SubTasksScreen";
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
 
