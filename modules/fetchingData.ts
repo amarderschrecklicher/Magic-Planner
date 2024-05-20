@@ -177,7 +177,7 @@ export async function updateFinishedTask(id:number) {
 export async function fetchStringCodes() {
   const response = await fetch(`${API_BASE_URL}/api/v1/account/settings`);
   const data = await response.json();
-  console.log(data)
+  
   return data;
 }
 

@@ -15,7 +15,8 @@ export default function HomeScreen({ navigation, route }:{ navigation:any, route
   const { accountID } = route.params;
 
   useEffect(() => {
-    if (accountID != 0) {
+    console.log(accountID)
+    if (accountID!=0) {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -28,7 +29,7 @@ export default function HomeScreen({ navigation, route }:{ navigation:any, route
         })
       );      
     }
-  }, []);
+  }, [accountID]);
 
   const askForCameraPermission = () => {
     (async () => {

@@ -43,7 +43,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
     let findAccount = false;
 
     stringCodes.forEach((string: any)  => {
-      if ( string.phoneLoginString == data) {
+      if (string.phoneLoginString == data) {
         storeData(string.child.id.toString());
         console.log(
           "ID koji se ubacuje u async storage: " +

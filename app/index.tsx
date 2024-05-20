@@ -8,7 +8,7 @@ import AppNavigator from '../navigation/AppNavigator';
 import React from "react";
 
 export default function App() {
-  const [accountID, setAccountID] = useState(0);
+  const [accountID, setAccountID] = useState<number | null>(null);
 
   const getData = async () => {
     try {
@@ -29,11 +29,14 @@ export default function App() {
 
   }, []);
 
+  if (accountID == null) return <LoadingAnimation />;
+  else {
     return (
       <>
         <StatusBar hidden />
         <AppNavigator accountID={accountID} />
       </>
     );
+  }
 
 }

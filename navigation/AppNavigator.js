@@ -47,10 +47,11 @@ const BottomNavigator = ( {route} ) =>  {
   );
 };
 
-const AppNavigator = (accountID) => {
-    
+const AppNavigator = ({accountID}) => {
+  const initialRouteName = accountID > 0 ? "BottomNavigator" : "Home";
+
   return (
-        <Stack.Navigator >
+        <Stack.Navigator initialRouteName={initialRouteName}>
           <Stack.Screen
             name="Home"
             component={HomeScreen}
