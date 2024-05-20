@@ -48,7 +48,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   const [password, setPassword] = useState("");
   const [priorityTasks, setPriorityTasks] = useState<TaskData[] | null>(null);
   const [normalTasks, setNormalTasks] = useState<TaskData[] | null>(null);
-  const [subTasks, setSubTasks] = useState<Map<string, SubTaskData[]> | null>(null);
+  const [subTasks, setSubTasks] = useState<Map<number, SubTaskData[]> | null>(null);
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const { accountID } = route.params;

@@ -11,7 +11,7 @@ const API_BASE_URL = "http://192.168.1.102:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
 export interface TaskData {
-  id: string;
+  id: number;
   name: string;
   dueDate: string;
   priority: boolean;
@@ -19,10 +19,11 @@ export interface TaskData {
 }
 
 export interface SubTaskData {
-  id: string;
+  id: number;
   parentTaskId: string;
   name: string;
   done: boolean;
+  description: string
 }
 
 export interface SettingsData{
@@ -30,7 +31,9 @@ export interface SettingsData{
   fontSize:number,
   font:string,
   colorOfNormalTask:string,
-  colorOfPriorityTask:string
+  colorOfPriorityTask:string,
+  colorForFont:string,
+  colorForProgress:string
 }
 
 export async function fetchAccount(accountID: number): Promise<{ name: string; gender: boolean; email: string; password: string } | undefined> {
@@ -83,9 +86,9 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
 }
 
 
-export async function fetchSubTasks(tasks: TaskData[]): Promise<Map<string, SubTaskData[]> | void> {
+export async function fetchSubTasks(tasks: TaskData[]): Promise<Map<number, SubTaskData[]> | void> {
   try {
-    const temp = new Map<string, SubTaskData[]>();
+    const temp = new Map<number, SubTaskData[]>();
 
     for (const task of tasks) {
       const url = `${API_BASE_URL}/api/v1/task/sub/${task.id}`;
@@ -120,7 +123,9 @@ export async function fetchSettings(accountID:number): Promise<SettingsData | un
       fontSize: data.fontSize,
       font: data.font,
       colorOfNormalTask: data.colorOfNormalTask,
-      colorOfPriorityTask: data.colorOfPriorityTask
+      colorOfPriorityTask: data.colorOfPriorityTask,
+      colorForFont: data.colorForFont,
+      colorForProgress: data.colorForProgress
     }
 
     return settings;

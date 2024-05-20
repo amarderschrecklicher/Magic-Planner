@@ -5,9 +5,13 @@ import { SettingsData, SubTaskData, updateFinishedSubTasks } from "../modules/fe
 
 export default function SubTask({ subTask, subTaskColor, settings }:{subTask:SubTaskData,subTaskColor:string,settings:SettingsData}) {
   const [isChecked, setChecked] = useState(subTask.done);
-  const [textLine, setTextLine] = useState(
-    subTask.done ? "line-through" : "none"
-  );
+
+  const handleCheckboxChange = () => {
+    setChecked(!isChecked);
+    if (!isChecked) {
+      updateFinishedSubTasks(subTask.id);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -18,12 +22,12 @@ export default function SubTask({ subTask, subTaskColor, settings }:{subTask:Sub
             : [styles.subTaskActive, { backgroundColor: subTaskColor }]
         }
       >
-        <Text
+        <Text 
           style={{
             fontSize: settings.fontSize,
             color: settings.colorForFont,
             fontFamily: settings.font,
-            textDecorationLine: textLine,
+            textDecorationLine: isChecked ? "line-through" : "none"
           }}
         >
           {subTask.description}
@@ -34,14 +38,7 @@ export default function SubTask({ subTask, subTaskColor, settings }:{subTask:Sub
           style={styles.checkbox}
           color={isChecked ? settings.colorForProgress : undefined}
           value={isChecked}
-          onValueChange={() => {
-            if (isChecked) return;
-            setChecked(!isChecked);
-            if (!isChecked) {
-              setTextLine("line-through");
-              updateFinishedSubTasks(subTask.id);
-            } else setTextLine("none");
-          }}
+          onValueChange={handleCheckboxChange}
           //disabled={isChecked}
         />
       </View>
