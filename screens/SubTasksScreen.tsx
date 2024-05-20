@@ -10,12 +10,14 @@ import {
 import SubTask from "../components/SubTask";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CurrentDate from "../components/CurrentDate";
+import { SubTaskData } from "../modules/fetchingData";
+
 
 export default function SubTasksScreen({navigation, route }:{navigation:any,route:any}) {
   const { task } = route.params;
   const { settings } = route.params;
   const { subTasks } = route.params;
-  const [sortedSubTasks, setSortedSubTasks] = useState([]);
+  const [sortedSubTasks, setSortedSubTasks] = useState<SubTaskData[] | null>(null);
 
   useEffect(() => {
     sortSubTasks();
@@ -68,7 +70,7 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
         Podzadaci
       </Text>
       <ScrollView style={styles.scroller}>
-        {sortedSubTasks.map((subTask) => {
+        {sortedSubTasks?.map((subTask: SubTaskData) => {
           return (
             <View key={subTask.id}>
               <SubTask

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {  View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import {  View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import {
   collection,
   addDoc,
@@ -11,50 +11,49 @@ import {
 import { database } from '../modules/firebase';
 import ChatHeader from '../components/ChatHeader';
 
+type ChatMessage = IMessage;
 
 export default function ChatScreen({navigation, route }:{navigation:any,route:any}) {
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { email, sos, accountID } = route.params;
   const [inputMessage, setInputMessage] = useState(sos === "SOS" ? "SOS: Help needed!" : "");
-  let unsubscribe;
 
   useEffect(() => {
-
-    signInAndListen();
-  
+    const unsubscribe = signInAndListen();
     return () => {
-      if (unsubscribe && typeof unsubscribe === 'function') {
+      if (unsubscribe) {
         unsubscribe();
       }
     };
   }, []);
 
-  const signInAndListen = async () => {
-
+  const signInAndListen = useCallback(() => {
     try {
-        const collectionRef = collection(database, email);
-        const q = query(collectionRef, orderBy('createdAt', 'desc'));
-  
-        return onSnapshot(q, querySnapshot => {
-          console.log('querySnapshot unsubscribe');
-          setMessages(
-            querySnapshot.docs.map(doc => ({
-              _id: doc.id,
-              createdAt: doc.data().createdAt.toDate(),
-              text: doc.data().text,
-              user: doc.data().user
-            }))
-          );
-        });
-      
+      const collectionRef = collection(database, email);
+      const q = query(collectionRef, orderBy('createdAt', 'desc'));
+
+      return onSnapshot(q, querySnapshot => {
+        setMessages(
+          querySnapshot.docs.map(doc => ({
+            _id: doc.id,
+            createdAt: doc.data().createdAt.toDate(),
+            text: doc.data().text,
+            user: doc.data().user
+          }))
+        );
+      });
     } catch (error) {
-      Alert.alert("Login error", error.message);
+      if (error instanceof Error) {
+        Alert.alert("Error", error.message);
+      } else {
+        Alert.alert("Error", "An unknown error occurred");
+      }
     }
-  };
+  }, [email]);
   
 
-  const onSend = useCallback((messages = []) => {
+  const onSend = useCallback((messages: ChatMessage[] = []) => {
       setMessages(previousMessages =>
         GiftedChat.append(previousMessages, messages)
       );
@@ -71,8 +70,8 @@ export default function ChatScreen({navigation, route }:{navigation:any,route:an
       <View style={styles.container}>
         <ChatHeader title="Poruke" />
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : null}
-          style={styles.chatContainer}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.chatContainer}
         >
           <GiftedChat
             messages={messages}
