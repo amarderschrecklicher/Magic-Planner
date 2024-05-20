@@ -122,7 +122,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
       if(subtasksData)
         setSubTasks(subtasksData);
-
+      
       await registerForPushNotificationsAsync().then(token => {
         if(token && token!="")
           setExpoPushToken(token)

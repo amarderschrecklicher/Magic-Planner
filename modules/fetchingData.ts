@@ -4,10 +4,11 @@ import * as Notifications from 'expo-notifications';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './firebase';
 import { Platform, Task } from "react-native";
+import Constants from "expo-constants";
 
 
 //const API_BASE_URL = "https://zavrsni-back.herokuapp.com";
-const API_BASE_URL = "http://192.168.1.102:8080";
+const API_BASE_URL = "http://192.168.1.108:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
 
@@ -21,18 +22,21 @@ export interface AccountData {
 
 export interface TaskData {
   id: number;
-  name: string;
+  taskName: string;
   dueDate: string;
   priority: boolean;
   done: boolean;
+  description:string,
+  dueTime:string,
+  difficulty:string
 }
 
 export interface SubTaskData {
-  id: number;
-  parentTaskId: string;
-  name: string;
-  done: boolean;
-  description: string
+  id: number,
+  parentTaskId: string,
+  name: string,
+  done: boolean,
+  description: string,
 }
 
 export interface SettingsData{
@@ -42,7 +46,7 @@ export interface SettingsData{
   colorOfNormalTask:string,
   colorOfPriorityTask:string,
   colorForFont:string,
-  colorForProgress:string
+  colorForProgress:string,
 }
 
 export async function fetchAccount(accountID: number): Promise< AccountData | undefined> {
@@ -173,6 +177,7 @@ export async function updateFinishedTask(id:number) {
 export async function fetchStringCodes() {
   const response = await fetch(`${API_BASE_URL}/api/v1/account/settings`);
   const data = await response.json();
+  console.log(data)
   return data;
 }
 
@@ -246,7 +251,10 @@ export async function registerForPushNotificationsAsync() {
       return;
     } 
 
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    if(Constants.easConfig)
+    token = await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.easConfig.projectId,
+    });
 
   } else {
     alert('Must use physical device for Push Notifications');

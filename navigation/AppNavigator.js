@@ -17,7 +17,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const BottomNavigator = ( route ) =>  {
+const BottomNavigator = ( {route} ) =>  {
 
   const { accountID } = route.params; 
 
@@ -70,27 +70,23 @@ const AppNavigator = (accountID) => {
               title: "Tasks",
               headerShown: false,
             }}
-          />          
-        </Stack.Navigator>
-  );
-};
-
-
-    /*           
+          />
           <Stack.Screen
             name="SubTasks"
             component={SubTasksScreen}
             options={{
-              headerShown: false,
+            headerShown: false,
             }}
           />
           <Stack.Screen
             name="Chat"
             component={ChatScreen}
             options={{
-              headerShown: false,
+            headerShown: false,
             }}
-          />
-          */
+          />          
+        </Stack.Navigator>
+  );
+};
 
 export default AppNavigator;

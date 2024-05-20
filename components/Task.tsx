@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import * as Progress from "react-native-progress";
-import { updateFinishedTask } from "../modules/fetchingData";
+import { SettingsData, SubTaskData, TaskData, updateFinishedTask } from "../modules/fetchingData";
 
 export default function Task({
   task,
-  settings,
+  settings ,
   taskColor,
   subTasks,
   updateTaskScreen,
-}) {
+}:{  task: TaskData,
+  settings : SettingsData ,
+  taskColor: string,
+  subTasks: SubTaskData[],
+  updateTaskScreen: any}) {
+
   const [finishedSubTasks, setFinishedSubTasks] = useState(0);
   const [numberOfSubTasks, setNumberOfSubTasks] = useState(0);
 

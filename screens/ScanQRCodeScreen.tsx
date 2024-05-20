@@ -41,6 +41,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const handleBarCodeScanned = async ({ type, data }:{ type:any, data:any }) => {
     setScanned(true);
     let findAccount = false;
+
     stringCodes.forEach((string: any)  => {
       if ( string.phoneLoginString == data) {
         storeData(string.child.id.toString());
