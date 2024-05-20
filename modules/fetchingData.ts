@@ -3,12 +3,21 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './firebase';
-import { Platform } from "react-native";
+import { Platform, Task } from "react-native";
 
 
 //const API_BASE_URL = "https://zavrsni-back.herokuapp.com";
 const API_BASE_URL = "http://192.168.1.102:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
+
+
+export interface AccountData {
+  id: number;
+  name: string;
+  gender: boolean; 
+  email: string; 
+  password: string
+}
 
 export interface TaskData {
   id: number;
@@ -36,7 +45,7 @@ export interface SettingsData{
   colorForProgress:string
 }
 
-export async function fetchAccount(accountID: number): Promise<{ name: string; gender: boolean; email: string; password: string } | undefined> {
+export async function fetchAccount(accountID: number): Promise< AccountData | undefined> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/child/${accountID}`
@@ -45,12 +54,19 @@ export async function fetchAccount(accountID: number): Promise<{ name: string; g
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
+    const account :AccountData = {
+      id: data.id,
+      name: data.name,
+      gender: data.kidMale, 
+      email: data.email, 
+      password: data.password
+    }
     
     await signInWithEmailAndPassword(auth, data.email, data.password);
     console.log("Login success");
 
 
-    return { name: data.name, gender: data.kidMale, email: data.email, password: data.password };
+    return account;
   } catch (error) {
     console.error("Failed to fetch account in TasksScreen:", error);
     return undefined;
@@ -58,15 +74,15 @@ export async function fetchAccount(accountID: number): Promise<{ name: string; g
 }
 
 
-export async function fetchTasks(accountID: number): Promise<{ data: any[], priority: any[], normal: any[] } | undefined> {
+export async function fetchTasks(accountID: number): Promise<{ data: any[], priority: TaskData[], normal: TaskData[] } | undefined> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/task/${accountID}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    let priority: any[] = [];
-    let normal: any[] = [];
+    let priority: TaskData[] = [];
+    let normal: TaskData[] = [];
 
     data.forEach((element: any) => {
       if (!element.done && todayTask(element.dueDate)) {

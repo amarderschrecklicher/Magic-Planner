@@ -52,6 +52,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const { accountID } = route.params;
+  
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
