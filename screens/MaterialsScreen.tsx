@@ -36,14 +36,19 @@ const MaterialsScreen = () => {
     }
   };
 
-  const renderMaterial = ({ item }) => (
-    <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
-      {item.contentType.startsWith('image/') && (
-        <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
-      )}
-      <Text style={styles.materialTitle}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+const renderMaterial = ({ item }) => (
+  <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
+    {item.contentType.startsWith('image/') && (
+      <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
+    )}
+    <Text style={styles.materialTitle}>{item.contentType === 'application/pdf' ? (
+      <TouchableOpacity onPress={() => Linking.openURL(item.downloadURL)}>
+        <Text style={styles.pdfLink}>{item.name}</Text>
+      </TouchableOpacity>
+    ) : item.name}</Text>
+  </TouchableOpacity>
+);
+
 
   const renderModalContent = () => {
     if (!selectedMaterial) {
@@ -120,6 +125,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '80%',
     borderRadius: 10,
+  },
+  pdfLink: {
+    marginTop: 5,
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
 
