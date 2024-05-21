@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, Modal, StyleSheet, Alert, Linking } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../modules/firebase';
-import { Video } from 'expo-av'; // Dodajemo Video komponentu iz expo-av biblioteke
+import { Video } from 'expo-av';
 
 const MaterialsScreen = () => {
   const [materials, setMaterials] = useState([]);
@@ -46,48 +46,33 @@ const MaterialsScreen = () => {
         <Video
           source={{ uri: item.downloadURL }}
           style={styles.materialImage}
-          useNativeControls // Dodajemo ovaj prop kako bismo koristili nativne kontrole
+          useNativeControls
         />
       )}
-      <Text style={styles.materialTitle}>{item.contentType === 'application/pdf' ? (
-        <TouchableOpacity onPress={() => Linking.openURL(item.downloadURL)}>
-          <Text style={styles.pdfLink}>{item.name}</Text>
-        </TouchableOpacity>
-      ) : item.name}</Text>
+      {item.contentType === 'application/pdf' && (
+        <Text style={styles.pdfLink}>{item.name}</Text>
+      )}
     </TouchableOpacity>
   );
 
-  const renderModalContent = () => {
-    if (!selectedMaterial) {
-      return null;
-    }
-
-    if (selectedMaterial.contentType.startsWith('image/')) {
-      return (
-        <Image source={{ uri: selectedMaterial.downloadURL }} style={styles.modalImage} />
-      );
-    }
-
-    if (selectedMaterial.contentType.startsWith('video/')) {
-      return (
-        <Video
-          source={{ uri: selectedMaterial.downloadURL }}
-          style={styles.modalImage}
-          useNativeControls // Dodajemo ovaj prop kako bismo koristili nativne kontrole
-        />
-      );
-    }
-
-    return null;
-  };
+  const renderSection = (sectionTitle, sectionMaterials) => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+      <FlatList
+        data={sectionMaterials}
+        renderItem={renderMaterial}
+        keyExtractor={item => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      />
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={materials}
-        renderItem={renderMaterial}
-        keyExtractor={item => item.id}
-      />
+      {renderSection('Slike', materials.filter(material => material.contentType.startsWith('image/')))}
+      {renderSection('Videozapisi', materials.filter(material => material.contentType.startsWith('video/')))}
+      {renderSection('PDF dokumenti', materials.filter(material => material.contentType === 'application/pdf'))}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -97,7 +82,25 @@ const MaterialsScreen = () => {
           <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>&times;</Text>
           </TouchableOpacity>
-          {renderModalContent()}
+          {selectedMaterial && (
+            <View style={styles.modalContent}>
+              {selectedMaterial.contentType.startsWith('image/') && (
+                <Image source={{ uri: selectedMaterial.downloadURL }} style={styles.modalImage} />
+              )}
+              {selectedMaterial.contentType.startsWith('video/') && (
+                <Video
+                  source={{ uri: selectedMaterial.downloadURL }}
+                  style={styles.modalImage}
+                  useNativeControls
+                />
+              )}
+              {selectedMaterial.contentType === 'application/pdf' && (
+                <TouchableOpacity onPress={() => Linking.openURL(selectedMaterial.downloadURL)}>
+                  <Text style={styles.pdfLink}>{selectedMaterial.name}</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </Modal>
     </View>
@@ -118,11 +121,18 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
   },
-  materialTitle: {
-    fontSize: 16,
+  pdfLink: {
+    marginTop: 5,
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 10,
-    textAlign: 'center',
+    marginBottom: 10,
   },
   modalContainer: {
     flex: 1,
@@ -143,10 +153,8 @@ const styles = StyleSheet.create({
     height: '80%',
     borderRadius: 10,
   },
-  pdfLink: {
-    marginTop: 5,
-    color: 'blue',
-    textDecorationLine: 'underline',
+  modalContent: {
+    alignItems: 'center',
   },
 });
 
