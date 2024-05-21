@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, Modal, StyleSheet, Alert, Linking } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../modules/firebase';
+import { Video } from 'expo-av'; // Dodajemo Video komponentu iz expo-av biblioteke
 
 const MaterialsScreen = () => {
   const [materials, setMaterials] = useState([]);
@@ -36,19 +37,25 @@ const MaterialsScreen = () => {
     }
   };
 
-const renderMaterial = ({ item }) => (
-  <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
-    {item.contentType.startsWith('image/') && (
-      <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
-    )}
-    <Text style={styles.materialTitle}>{item.contentType === 'application/pdf' ? (
-      <TouchableOpacity onPress={() => Linking.openURL(item.downloadURL)}>
-        <Text style={styles.pdfLink}>{item.name}</Text>
-      </TouchableOpacity>
-    ) : item.name}</Text>
-  </TouchableOpacity>
-);
-
+  const renderMaterial = ({ item }) => (
+    <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
+      {item.contentType.startsWith('image/') && (
+        <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
+      )}
+      {item.contentType.startsWith('video/') && (
+        <Video
+          source={{ uri: item.downloadURL }}
+          style={styles.materialImage}
+          useNativeControls // Dodajemo ovaj prop kako bismo koristili nativne kontrole
+        />
+      )}
+      <Text style={styles.materialTitle}>{item.contentType === 'application/pdf' ? (
+        <TouchableOpacity onPress={() => Linking.openURL(item.downloadURL)}>
+          <Text style={styles.pdfLink}>{item.name}</Text>
+        </TouchableOpacity>
+      ) : item.name}</Text>
+    </TouchableOpacity>
+  );
 
   const renderModalContent = () => {
     if (!selectedMaterial) {
@@ -58,6 +65,16 @@ const renderMaterial = ({ item }) => (
     if (selectedMaterial.contentType.startsWith('image/')) {
       return (
         <Image source={{ uri: selectedMaterial.downloadURL }} style={styles.modalImage} />
+      );
+    }
+
+    if (selectedMaterial.contentType.startsWith('video/')) {
+      return (
+        <Video
+          source={{ uri: selectedMaterial.downloadURL }}
+          style={styles.modalImage}
+          useNativeControls // Dodajemo ovaj prop kako bismo koristili nativne kontrole
+        />
       );
     }
 
