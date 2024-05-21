@@ -1,31 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, Modal, StyleSheet, Alert, Linking } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  Alert,
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../modules/firebase';
 import { Video } from 'expo-av';
+import {
+  fetchAccount,
+  fetchSettings,
+  SettingsData
+} from "../modules/fetchingData";
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import CurrentDate from '../components/CurrentDate';
+import SideButtons from '../components/SideButtons';
+import LoadingAnimation from '../components/LoadingAnimation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 
-const MaterialsScreen = () => {
+const MaterialsScreen = ({ navigation, route }) => {
   const [materials, setMaterials] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [settings, setSettings] = useState(null);
+  const { accountID } = route.params;
 
   useEffect(() => {
-    const fetchMaterials = async () => {
-      try {
-        const materialsCollection = collection(database, 'materials');
-        const materialsSnapshot = await getDocs(materialsCollection);
-        const materialsList = materialsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setMaterials(materialsList);
-      } catch (error) {
-        console.error('Error fetching materials:', error);
-        Alert.alert('Error', 'Failed to fetch materials');
-      }
-    };
+    fetchData();
 
-    fetchMaterials();
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
+
+  const fetchData = async () => {
+    try {
+      const materialsCollection = collection(database, 'materials');
+      const materialsSnapshot = await getDocs(materialsCollection);
+      const materialsList = materialsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMaterials(materialsList);
+
+      const settingsData = await fetchSettings(accountID);
+      setSettings(settingsData);
+    } catch (error) {
+      console.error('Error fetching materials:', error);
+      Alert.alert('Error', 'Failed to fetch materials');
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
   }, []);
 
   const openMaterial = (material) => {
@@ -57,7 +103,9 @@ const MaterialsScreen = () => {
 
   const renderSection = (sectionTitle, sectionMaterials) => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+      <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font }]}>
+        {sectionTitle}
+      </Text>
       <FlatList
         data={sectionMaterials}
         renderItem={renderMaterial}
@@ -68,11 +116,70 @@ const MaterialsScreen = () => {
     </View>
   );
 
+  const alertFunction = () => {
+    Alert.alert(
+      'Da li ste sigurni da se želite odjaviti?',
+      'Ako se odjavite ponovo ćete morati skenirati QR kod kako biste se prijavili.',
+      [
+        {
+          text: 'Ne',
+          onPress: undefined,
+          style: 'cancel',
+        },
+        {
+          text: 'Da',
+          onPress: logout,
+        },
+      ]
+    );
+  };
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('account');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Home', params: { accountID: 0 } }],
+        })
+      );
+    } catch (e) {
+      console.log('Error when storing data: ' + e);
+    }
+  };
+
+  const handleChatPress = () => {
+    navigation.navigate('Chat', { email: settings.email, accountID: accountID });
+  };
+
+  const handleSOSPress = () => {
+    navigation.navigate('Chat', { sos: 'SOS', email: settings.email, accountID: accountID });
+  };
+
+  if (!settings) {
+    return <LoadingAnimation />;
+  }
+
   return (
-    <View style={styles.container}>
-      {renderSection('Slike', materials.filter(material => material.contentType.startsWith('image/')))}
-      {renderSection('Videozapisi', materials.filter(material => material.contentType.startsWith('video/')))}
-      {renderSection('PDF dokumenti', materials.filter(material => material.contentType === 'application/pdf'))}
+    <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
+      <View style={styles.header}>
+        <CurrentDate settings={settings} />
+        <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
+          <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
+        </TouchableOpacity>
+      </View>
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+
+        <Text style={{ fontSize: settings.fontSize + 6, fontFamily: settings.font, marginLeft: 25, marginBottom: 40 }}>
+          Instrukcije
+        </Text>
+        {renderSection('Slike', materials.filter(material => material.contentType.startsWith('image/')))}
+        {renderSection('Videozapisi', materials.filter(material => material.contentType.startsWith('video/')))}
+        {renderSection('PDF dokumenti', materials.filter(material => material.contentType === 'application/pdf'))}
+      </ScrollView>
+      <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -103,11 +210,23 @@ const MaterialsScreen = () => {
           )}
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 15,
+  },
+  logoutButton: {
+    marginTop: 5,
+    marginLeft: 15,
+    marginBottom: 15,
+  },
   container: {
     flex: 1,
     padding: 10,
@@ -128,6 +247,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
+    marginLeft: 25,
   },
   sectionTitle: {
     fontSize: 20,
