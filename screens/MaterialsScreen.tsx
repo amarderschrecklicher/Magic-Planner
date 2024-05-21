@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, Modal, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, Modal, StyleSheet, Alert, Linking } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../modules/firebase';
 
@@ -28,8 +28,12 @@ const MaterialsScreen = () => {
   }, []);
 
   const openMaterial = (material) => {
-    setSelectedMaterial(material);
-    setModalVisible(true);
+    if (material.contentType === 'application/pdf') {
+      Linking.openURL(material.downloadURL);
+    } else {
+      setSelectedMaterial(material);
+      setModalVisible(true);
+    }
   };
 
   const renderMaterial = ({ item }) => (
