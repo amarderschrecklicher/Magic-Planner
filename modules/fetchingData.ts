@@ -8,7 +8,7 @@ import Constants from "expo-constants";
 
 
 //const API_BASE_URL = "https://zavrsni-back.herokuapp.com";
-const API_BASE_URL = "http://192.168.1.108:8080";
+const API_BASE_URL = "http://192.168.0.25:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
 
