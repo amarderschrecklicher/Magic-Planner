@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Alert,
   Linking,
   SafeAreaView,
-  ScrollView,
+  SectionList,
   RefreshControl,
 } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
@@ -83,7 +83,7 @@ const MaterialsScreen = ({ navigation, route }) => {
     }
   };
 
-  const renderMaterial = ({ item }) => (
+  const renderImageOrVideo = ({ item }) => (
     <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
       {item.contentType.startsWith('image/') && (
         <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
@@ -91,29 +91,17 @@ const MaterialsScreen = ({ navigation, route }) => {
       {item.contentType.startsWith('video/') && (
         <Video
           source={{ uri: item.downloadURL }}
-          style={styles.materialImage}
+          style={styles.video}
           useNativeControls
         />
-      )}
-      {item.contentType === 'application/pdf' && (
-        <Text style={styles.pdfLink}>{item.name}</Text>
       )}
     </TouchableOpacity>
   );
 
-  const renderSection = (sectionTitle, sectionMaterials) => (
-    <View style={styles.section}>
-      <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font }]}>
-        {sectionTitle}
-      </Text>
-      <FlatList
-        data={sectionMaterials}
-        renderItem={renderMaterial}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
+  const renderPDF = ({ item }) => (
+    <TouchableOpacity style={styles.pdfContainer} onPress={() => openMaterial(item)}>
+      <Text style={styles.pdfLink}>{item.name}</Text>
+    </TouchableOpacity>
   );
 
   const alertFunction = () => {
@@ -160,6 +148,10 @@ const MaterialsScreen = ({ navigation, route }) => {
     return <LoadingAnimation />;
   }
 
+  const imageMaterials = materials.filter(material => material.contentType.startsWith('image/'));
+  const videoMaterials = materials.filter(material => material.contentType.startsWith('video/'));
+  const pdfMaterials = materials.filter(material => material.contentType === 'application/pdf');
+
   return (
     <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
       <View style={styles.header}>
@@ -168,17 +160,38 @@ const MaterialsScreen = ({ navigation, route }) => {
           <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
         </TouchableOpacity>
       </View>
-      <ScrollView
+      <FlatList
+        ListHeaderComponent={() => (
+          <>
+          <Text style={[styles.sectionTitle, { fontSize: settings.fontSize + 6, fontFamily: settings.font, marginBottom: 35 }]}>Instrukcije</Text>
+            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font }]}>Slike</Text>
+            <FlatList
+              data={imageMaterials}
+              renderItem={renderImageOrVideo}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style = {{marginLeft: 15}}
+            />
+            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>Videozapisi</Text>
+            <FlatList
+              data={videoMaterials}
+              renderItem={renderImageOrVideo}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style = {{marginLeft: 15}}
+            />
+            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>PDF dokumenti</Text>
+          </>
+        )}
+        data={pdfMaterials}
+        renderItem={renderPDF}
+        keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      >
-
-        <Text style={{ fontSize: settings.fontSize + 6, fontFamily: settings.font, marginLeft: 25, marginBottom: 40 }}>
-          Instrukcije
-        </Text>
-        {renderSection('Slike', materials.filter(material => material.contentType.startsWith('image/')))}
-        {renderSection('Videozapisi', materials.filter(material => material.contentType.startsWith('video/')))}
-        {renderSection('PDF dokumenti', materials.filter(material => material.contentType === 'application/pdf'))}
-      </ScrollView>
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.pdfList}
+      />
       <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
       <Modal
         visible={modalVisible}
@@ -227,32 +240,32 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 15,
   },
-  container: {
-    flex: 1,
-    padding: 10,
-  },
   materialBox: {
     marginBottom: 15,
     alignItems: 'center',
   },
+  pdfContainer: {
+    marginBottom: 15,
+    alignItems: 'flex-start',
+    paddingHorizontal: 25,
+  },
   materialImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
+    width: '100%',
+    height: 150,
+    aspectRatio: 16 / 9,
+    marginHorizontal: 10
   },
   pdfLink: {
     marginTop: 5,
     color: 'blue',
     textDecorationLine: 'underline',
-  },
-  section: {
-    marginBottom: 20,
-    marginLeft: 25,
+    fontSize: 20,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    marginLeft: 25,
   },
   modalContainer: {
     flex: 1,
@@ -263,18 +276,28 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
+    zIndex: 1,
   },
   closeButtonText: {
     fontSize: 30,
     color: 'white',
   },
-  modalImage: {
-    width: '100%',
-    height: '80%',
-    borderRadius: 10,
-  },
   modalContent: {
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalImage: {
+    height: '65%',
+    aspectRatio: 1,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    resizeMode: 'contain',
+  },
+  video: {
+    width: '100%',
+    height: 150,
+    aspectRatio: 16 / 9,
+    marginHorizontal: 10
   },
 });
 
