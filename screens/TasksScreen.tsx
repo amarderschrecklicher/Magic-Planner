@@ -130,8 +130,6 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       );
 
       const { token } = await fetchTokens(accountID)
-      console.log(token)
-      console.log(expoPushToken)
 
       if(token == null || token == undefined)   
         addToken(expoPushToken,accountID,Device.modelName  || "")
@@ -377,14 +375,6 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#3b5998',
-  },
   tasks: {
     marginBottom: 50,
     marginTop: 30,

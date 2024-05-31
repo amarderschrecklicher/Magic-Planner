@@ -13,6 +13,8 @@ import { CommonActions } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from "lottie-react-native";
 import { fetchStringCodes } from "../modules/fetchingData";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/modules/firebase";
 
 export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const [scanned, setScanned] = useState(false);
@@ -30,9 +32,11 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
     setStringCodes(data);
   }
 
-  const storeData = async (value:any) => {
+  const storeData = async (child:any) => {
     try {
-      await AsyncStorage.setItem("account", value);
+      await AsyncStorage.setItem("account", child.id.toString());
+      await signInWithEmailAndPassword(auth, child.email, child.password);
+      console.log("Login success");
     } catch (e) {
       console.log("Error when storing data: " + e);
     }
@@ -44,14 +48,13 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
 
     stringCodes.forEach((string: any)  => {
       if (string.phoneLoginString == data) {
-        storeData(string.child.id.toString());
+        storeData(string.child);
         console.log(
           "ID koji se ubacuje u async storage: " +
             string.child.id +
             " i skeniran kod: " +
             data
         );
-
         setAuhenticated(true);
         setId(string.child.id);
         findAccount = true;

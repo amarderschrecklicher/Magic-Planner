@@ -10,7 +10,7 @@ import {
 import SubTask from "../components/SubTask";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CurrentDate from "../components/CurrentDate";
-import { SubTaskData } from "../modules/fetchingData";
+import { SubTaskData, updateStartedTask } from "../modules/fetchingData";
 
 
 export default function SubTasksScreen({navigation, route }:{navigation:any,route:any}) {
@@ -18,6 +18,7 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
   const { settings } = route.params;
   const { subTasks } = route.params;
   const [sortedSubTasks, setSortedSubTasks] = useState<SubTaskData[] | null>(null);
+  const [started, setStarted] = useState(task.start !== null);
 
   useEffect(() => {
     sortSubTasks();
@@ -33,59 +34,52 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
     setSortedSubTasks(temp);
   };
 
+  const handleStartTask = () => {
+    setStarted(true);
+    updateStartedTask(task.id)
+  };
+
+  const buttonText = started ? `Task započet${task.start ? `: ${task.start}` : ''}` : "Zapocni zadatak";
+
+
   return (
-    <SafeAreaView
-      style={{ backgroundColor: settings.colorForBackground, flex: 1 }}
-    >
+    <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
       <View>
         <CurrentDate settings={settings} />
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate("Tasks")}
-        >
-          <Ionicons name="arrow-back" size={50}></Ionicons>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Tasks")}>
+          <Ionicons name="arrow-back" size={50} />
         </TouchableOpacity>
       </View>
-      <Text
-        style={[
-          styles.title,
-          { fontSize: settings.fontSize + 2, fontFamily: settings.font },
-        ]}
-      >
+      <Text style={[styles.title, { fontSize: settings.fontSize + 2, fontFamily: settings.font }]}>
         Opis zadatka
       </Text>
       <View style={styles.description}>
-        <Text
-          style={{ fontSize: settings.fontSize, fontFamily: settings.font }}
-        >
+        <Text style={{ fontSize: settings.fontSize, fontFamily: settings.font }}>
           {task.description}
         </Text>
       </View>
-      <Text
-        style={[
-          styles.title,
-          { fontSize: settings.fontSize + 2, fontFamily: settings.font },
-        ]}
-      >
+      <Text style={[styles.title, { fontSize: settings.fontSize + 2, fontFamily: settings.font }]}>
         Podzadaci
       </Text>
       <ScrollView style={styles.scroller}>
-        {sortedSubTasks?.map((subTask: SubTaskData) => {
-          return (
-            <View key={subTask.id}>
-              <SubTask
-                subTask={subTask}
-                subTaskColor={
-                  task.priority
-                    ? settings.colorOfPriorityTask
-                    : settings.colorOfNormalTask
-                }
-                settings={settings}
-              />
-            </View>
-          );
-        })}
+        {sortedSubTasks?.map((subTask) => (
+          <View key={subTask.id}>
+            <SubTask
+              started = {started}
+              subTask={subTask}
+              subTaskColor={task.priority ? settings.colorOfPriorityTask : settings.colorOfNormalTask}
+              settings={settings}
+            />
+          </View>
+        ))}
       </ScrollView>
+      <TouchableOpacity
+        style={started ? styles.startButtonDisabled : styles.startButton}
+        onPress={handleStartTask}
+        disabled={started}
+      >
+        <Text style={styles.startButtonText}>{buttonText}</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -93,7 +87,6 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
 const styles = StyleSheet.create({
   scroller: {
     marginHorizontal: 20,
-    //borderWidth: 1.5,
     borderRadius: 15,
   },
   title: {
@@ -112,5 +105,26 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 10,
     borderRadius: 15,
+  },
+  startButton: {
+    backgroundColor: '#6200ea',
+    padding: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
+  },
+  startButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  startButtonDisabled: {
+    backgroundColor: '#CBC3E3', // Dimmer color for disabled state
+    padding: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
   },
 });

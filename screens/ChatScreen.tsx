@@ -68,7 +68,6 @@ export default function ChatScreen({navigation, route }:{navigation:any,route:an
 
     return (
       <View style={styles.container}>
-        <ChatHeader title="Poruke" />
         <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.chatContainer}

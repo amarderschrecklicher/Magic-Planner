@@ -1,14 +1,14 @@
 import { todayTask, compareTimes } from "./dateModules";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './firebase';
 import { Platform, Task } from "react-native";
 import Constants from "expo-constants";
+import moment from 'moment';
 
 
 //const API_BASE_URL = "https://zavrsni-back.herokuapp.com";
-const API_BASE_URL = "http://192.168.1.108:8080";
+const API_BASE_URL = "http://192.168.1.101:8080";
 //const API_BASE_URL = "https://zavrsni-be-ba8430d30a0c.herokuapp.com";
 
 
@@ -28,7 +28,9 @@ export interface TaskData {
   done: boolean;
   description:string,
   dueTime:string,
-  difficulty:string
+  difficulty:string,
+  start:string | null,
+  end: string | null
 }
 
 export interface SubTaskData {
@@ -65,11 +67,6 @@ export async function fetchAccount(accountID: number): Promise< AccountData | un
       email: data.email, 
       password: data.password
     }
-    
-    await signInWithEmailAndPassword(auth, data.email, data.password);
-    console.log("Login success");
-
-
     return account;
   } catch (error) {
     console.error("Failed to fetch account in TasksScreen:", error);
@@ -90,13 +87,27 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
 
     data.forEach((element: any) => {
       if (!element.done && todayTask(element.dueDate)) {
-        if (element.priority) priority.push(element);
-        else normal.push(element);
+
+        let task : TaskData = {
+          id: element.id,
+          taskName: element.taskName,
+          dueDate: element.dueDate,
+          priority: element.priority,
+          done: element.done,
+          description: element.description,
+          dueTime: element.dueTime,
+          difficulty: element.difficulty,
+          start : moment(element.start).format('YYYY-MM-DD HH:mm'),
+          end: moment(element.end).format('YYYY-MM-DD HH:mm')
+        }        
+        if (element.priority) priority.push(task);
+        else normal.push(task);
       }
     });
 
     priority.sort((a: any, b: any) => compareTimes(a, b));
     normal.sort((a: any, b: any) => compareTimes(a, b));
+
 
     return { data, priority, normal };
   } catch (error) {
@@ -167,6 +178,16 @@ export async function updateFinishedSubTasks(id:number) {
 export async function updateFinishedTask(id:number) {
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/done/${id}`, {
+      method: "PUT",
+    });
+  } catch (error) {
+    console.error("Failed to update finished task in Task:", error);
+  }
+}
+
+export async function updateStartedTask(id:number) {
+  try {
+    await fetch(`${API_BASE_URL}/api/v1/task/start/${id}`, {
       method: "PUT",
     });
   } catch (error) {
