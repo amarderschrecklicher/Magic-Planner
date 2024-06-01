@@ -39,7 +39,7 @@ export default function Task({
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: taskColor }]}>
+      <View style={[styles.container, { backgroundColor: task.overDo?taskColor: "#DD6975" }]}>
         <Text
           style={[
             styles.defaultText,
@@ -63,25 +63,6 @@ export default function Task({
         >
           {task.taskName}
         </Text>
-
-        {/* <Text
-          style={[
-            styles.defaultText,
-            { fontSize: settings.fontSize, color: settings.colorForFont },
-          ]}
-        >
-          Opis zadatka:
-        </Text>
-        <Text
-          numberOfLines={1}
-          style={{
-            fontSize: settings.fontSize,
-            color: settings.colorForFont,
-            marginBottom: 20,
-          }}
-        >
-          {task.description}
-        </Text> */}
         <View style={styles.time}>
           <Text
             style={[
@@ -103,7 +84,7 @@ export default function Task({
               textDecorationLine: "underline",
             }}
           >
-            {task.dueTime}
+            {task.overDo? task.dueTime:"Rok prošao"}
           </Text>
         </View>
       </View>

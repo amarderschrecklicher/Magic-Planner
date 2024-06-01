@@ -18,7 +18,7 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
   const { settings } = route.params;
   const { subTasks } = route.params;
   const [sortedSubTasks, setSortedSubTasks] = useState<SubTaskData[] | null>(null);
-  const [started, setStarted] = useState(task.start !== null);
+  const [started, setStarted] = useState(task.start !== null && task.start !== "Invalid date");
 
   useEffect(() => {
     sortSubTasks();
@@ -39,8 +39,7 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
     updateStartedTask(task.id)
   };
 
-  const buttonText = started ? `Task započet${task.start ? `: ${task.start}` : ''}` : "Zapocni zadatak";
-
+  const buttonText = started ? `Zadatak započet${task.start ? `: ${task.start}` : ''}` : "Započni zadatak";
 
   return (
     <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   startButton: {
-    backgroundColor: '#6200ea',
+    backgroundColor: '#002366',
     padding: 15,
     borderRadius: 30,
     alignItems: 'center',

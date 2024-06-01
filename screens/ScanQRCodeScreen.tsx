@@ -35,6 +35,8 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const storeData = async (child:any) => {
     try {
       await AsyncStorage.setItem("account", child.id.toString());
+      await AsyncStorage.setItem("email", child.email);
+      await AsyncStorage.setItem("password", child.password);
       await signInWithEmailAndPassword(auth, child.email, child.password);
       console.log("Login success");
     } catch (e) {

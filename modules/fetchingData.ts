@@ -30,7 +30,8 @@ export interface TaskData {
   dueTime:string,
   difficulty:string,
   start:string | null,
-  end: string | null
+  end: string | null,
+  overDo:boolean
 }
 
 export interface SubTaskData {
@@ -86,7 +87,7 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
     let normal: TaskData[] = [];
 
     data.forEach((element: any) => {
-      if (!element.done && todayTask(element.dueDate)) {
+      if (!element.done) {
 
         let task : TaskData = {
           id: element.id,
@@ -97,8 +98,9 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
           description: element.description,
           dueTime: element.dueTime,
           difficulty: element.difficulty,
-          start : moment(element.start).format('YYYY-MM-DD HH:mm'),
-          end: moment(element.end).format('YYYY-MM-DD HH:mm')
+          start : element.start? moment(element.start).format('DD.MM.YYYY. u HH:mm') : null,
+          end: element.end? moment(element.end).format('DD.MM.YYYY. u HH:mm') : null,
+          overDo : todayTask(element.dueDate)
         }        
         if (element.priority) priority.push(task);
         else normal.push(task);
