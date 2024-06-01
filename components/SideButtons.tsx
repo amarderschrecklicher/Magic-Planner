@@ -11,11 +11,11 @@ const SideButtons = ({ onChatPress, onSOSPress }:  {onChatPress:any, onSOSPress:
     <View style={styles.container}>
       {/* Chat button */}
       <TouchableOpacity style={[styles.button, { backgroundColor: '#4CAF50' }]} onPress={onChatPress}>
-        <Ionicons name="chatbox-outline" size={windowWidth * 0.07} color="white" />
+        <Ionicons name="chatbox-outline" size={windowWidth * 0.08} color="white" />
       </TouchableOpacity>
       {/* SOS button */}
       <TouchableOpacity style={[styles.button, { backgroundColor: '#FF5733' }]} onPress={onSOSPress}>
-        <Ionicons name="alert-circle-outline" size={windowWidth * 0.12} color="white" style={styles.sosIcon} />
+        <Ionicons name="alert-circle-outline" size={windowWidth * 0.1} color="white" style={styles.sosIcon} />
       </TouchableOpacity>
     </View>
   );

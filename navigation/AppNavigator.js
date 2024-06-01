@@ -37,6 +37,7 @@ const BottomNavigator = ( {route} ) =>  {
       <Tab.Screen 
         name="Materijali" 
         component={MaterialsScreen}
+        initialParams={{ accountID: accountID }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
