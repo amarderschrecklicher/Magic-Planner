@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import Checkbox from "expo-checkbox";
 import { SettingsData, SubTaskData, updateFinishedSubTasks } from "../modules/fetchingData";
 
-export default function SubTask({ subTask, subTaskColor, settings }:{subTask:SubTaskData,subTaskColor:string,settings:SettingsData}) {
+export default function SubTask({ started, subTask, subTaskColor, settings }:{started:boolean, subTask:SubTaskData,subTaskColor:string,settings:SettingsData}) {
   const [isChecked, setChecked] = useState(subTask.done);
 
   const handleCheckboxChange = () => {
@@ -39,7 +39,7 @@ export default function SubTask({ subTask, subTaskColor, settings }:{subTask:Sub
           color={isChecked ? settings.colorForProgress : undefined}
           value={isChecked}
           onValueChange={handleCheckboxChange}
-          //disabled={isChecked}
+          disabled={!started}
         />
       </View>
     </View>

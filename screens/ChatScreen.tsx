@@ -1,100 +1,204 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {  View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import React, { useState, useEffect } from 'react';
+import { Text,View, StyleSheet, KeyboardAvoidingView, Platform, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import {
   collection,
   addDoc,
   orderBy,
   query,
-  onSnapshot
+  onSnapshot,
+  serverTimestamp
 } from 'firebase/firestore';
 import { database } from '../modules/firebase';
 import ChatHeader from '../components/ChatHeader';
-
-type ChatMessage = IMessage;
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function ChatScreen({navigation, route }:{navigation:any,route:any}) {
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState([]);
   const { email, sos, accountID } = route.params;
-  const [inputMessage, setInputMessage] = useState(sos === "SOS" ? "SOS: Help needed!" : "");
+  const [newMessage, setNewMessage] = useState(sos === "SOS" ? "SOS: POMOĆ POTREBNA!" : "");
 
   useEffect(() => {
     const unsubscribe = signInAndListen();
     return () => {
-      if (unsubscribe) {
+      if (typeof unsubscribe === 'function') {
         unsubscribe();
       }
     };
   }, []);
 
-  const signInAndListen = useCallback(() => {
+  const signInAndListen = async () => {
     try {
-      const collectionRef = collection(database, email);
-      const q = query(collectionRef, orderBy('createdAt', 'desc'));
+        const collectionRef = collection(database, email);
+        const q = query(collectionRef, orderBy('createdAt', 'desc'));
 
-      return onSnapshot(q, querySnapshot => {
-        setMessages(
-          querySnapshot.docs.map(doc => ({
-            _id: doc.id,
-            createdAt: doc.data().createdAt.toDate(),
-            text: doc.data().text,
-            user: doc.data().user
-          }))
-        );
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert("Error", error.message);
-      } else {
-        Alert.alert("Error", "An unknown error occurred");
-      }
+        return onSnapshot(q, querySnapshot => {
+            console.log('Received messages:');
+            const receivedMessages = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                const createdAt = data.createdAt ? data.createdAt.toDate() : new Date(); 
+                return {
+                    _id: doc.id,
+                    createdAt,
+                    text: data.text,
+                    user: data.user
+                };
+            });
+            console.log(receivedMessages); 
+            setMessages(receivedMessages); 
+        });
+    } catch (error:any) {
+        console.log("Login error:", error.message);
     }
-  }, [email]);
+};
   
 
-  const onSend = useCallback((messages: ChatMessage[] = []) => {
-      setMessages(previousMessages =>
-        GiftedChat.append(previousMessages, messages)
-      );
-      const { _id, createdAt, text, user } = messages[0];    
-      addDoc(collection(database, email), {
-        _id,
-        createdAt,
-        text,
-        user
-      });
-    }, []);
+const onSendMessage = async (e:any) => {
+  e.preventDefault();
 
-    return (
-      <View style={styles.container}>
-        <ChatHeader title="Poruke" />
-        <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.chatContainer}
-        >
-          <GiftedChat
-            messages={messages}
-            onSend={messages => onSend(messages)}
-            user={{
-              _id: accountID,
-              avatar: 'https://i.pravatar.cc/300'
-            }}
-            placeholder="Type your message here..."
-            text={inputMessage} // Set the initial input message
-            onInputTextChanged={(text) => setInputMessage(text)} // Update input message state
-          />
-        </KeyboardAvoidingView>
-      </View>
-    );
+  if (newMessage.trim() === '') return;
+
+  const message = {
+      text: newMessage,
+      user: {
+          _id: accountID,
+          avatar: 'https://i.pravatar.cc/300'
+      },
+      createdAt: serverTimestamp() 
+  };
+
+  try {
+      await addDoc(collection(database, email), message); 
+      setNewMessage('');
+  } catch (error) {
+      console.error("Error sending message:", error);
   }
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    chatContainer: {
-      flex: 1,
-      paddingBottom: 20,
-    },
-  });
+};
+
+return (
+  <KeyboardAvoidingView
+    style={styles.container}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+  >
+    <ChatHeader title={'Poruke'}></ChatHeader>
+    <FlatList
+      inverted
+      data={messages}
+      renderItem={({ item }) => (
+        <View
+          key={item._id}
+          style={[
+            styles.messageContainer,
+            item.user._id === accountID ? styles.sent : styles.received,
+          ]}
+        >
+          <View
+            style={[
+              styles.message,
+              item.user._id === accountID ? styles.messageSent : styles.messageReceived,
+            ]}
+          >
+            <Text style={item.user._id === accountID ?styles.textSent:styles.textRecieved}>{item.text}</Text>
+            <View style={styles.messageTime}>
+              <Text style={styles.smallText}>
+                {new Date(item.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
+      keyExtractor={(item) => item._id.toString()}
+      contentContainerStyle={styles.messageList}
+    />
+    <View style={styles.messageInput}>
+      <TextInput
+        style={styles.input}
+        placeholder="Unesi poruku..."
+        placeholderTextColor="#888"
+        value={newMessage}
+        onChangeText={setNewMessage}
+      />
+      <TouchableOpacity
+        style={styles.sendButton}
+        onPress={(e) => {
+          onSendMessage(e);
+          setNewMessage('');
+        }}
+      >
+        <FontAwesome name="paper-plane" size={24} color="white" />
+      </TouchableOpacity>
+    </View>
+  </KeyboardAvoidingView>
+);
+}
+
+const styles = StyleSheet.create({
+  textSent:  {
+    color:"white"
+  },
+  textRecieved:  {
+    color:"black"
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  messageList: {
+    padding: 10,
+  },
+  messageContainer: {
+    marginVertical: 5,
+  },
+  sent: {
+    alignItems: 'flex-end',
+  },
+  received: {
+    alignItems: 'flex-start',
+  },
+  message: {
+    maxWidth: '80%',
+    padding: 10,
+    borderRadius: 10,
+  },
+  messageSent: {
+    backgroundColor: '#007AFF',
+    color:"white"
+  },
+  messageReceived: {
+    backgroundColor: '#E5E5EA',
+  },
+  smallText: {
+    fontSize: 10,
+    color: '#555',
+  },
+  messageTime: {
+    alignSelf: 'flex-end',
+    marginTop: 5,
+  },
+  messageInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  input: {
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  sendButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

@@ -6,6 +6,8 @@ import LoadingAnimation from "../components/LoadingAnimation";
 import { fetchFonts } from '../modules/fontLoader';
 import AppNavigator from '../navigation/AppNavigator';
 import React from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/modules/firebase";
 
 export default function App() {
   const [accountID, setAccountID] = useState<number | null>(null);
@@ -13,10 +15,15 @@ export default function App() {
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("account");
+      const email = await AsyncStorage.getItem("email");
+      const password = await AsyncStorage.getItem("password");
+
       console.log("Id u async storage: " + value);
-      if (value != null) {
+      if (value && email && password) {
         const id = parseInt(value);
         setAccountID(id);
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log("Login success");
       } else setAccountID(0);
     } catch (e) {
       console.log("Error when geting data: " + e);
@@ -34,7 +41,7 @@ export default function App() {
     return (
       <>
         <StatusBar hidden />
-        <AppNavigator accountID={accountID} />
+        <AppNavigator accountID={accountID}/>
       </>
     );
   }

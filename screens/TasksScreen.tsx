@@ -62,10 +62,10 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   });
 
   useEffect(() => {
-    fetchData();
+    fetchData(false);
 
     const unsubscribe = navigation.addListener("focus", () => {
-      fetchData();
+      fetchData(false);
       
     });
 
@@ -95,23 +95,18 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     };
   }, [navigation]);
 
-  async function fetchData() {
+  async function fetchData(refresh:boolean) {
     try {
-      
-      const employeeData = await fetchAccount(accountID);
 
+      const employeeData = await fetchAccount(accountID);
+      
       if(employeeData){
 
       setKidName(employeeData.name);
       setMaleKid(employeeData.gender);
       setEmail(employeeData.email);
       setPassword(employeeData.password);
-
-      const settingsData = await fetchSettings(accountID);
-
-      if(settingsData)  
-        setSettings(settingsData);
-      
+      }
       const tasksData = await fetchTasks(accountID);
       
       if(tasksData){
@@ -122,7 +117,13 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
       if(subtasksData)
         setSubTasks(subtasksData);
+      const settingsData = await fetchSettings(accountID);
+
+      if(settingsData)  
+        setSettings(settingsData);
       
+      if(!refresh){
+
       await registerForPushNotificationsAsync().then(token => {
         if(token && token.data!="")
           setExpoPushToken(token.data)
@@ -130,18 +131,12 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       );
 
       const { token } = await fetchTokens(accountID)
-      console.log(token)
-      console.log(expoPushToken)
 
       if(token == null || token == undefined)   
         addToken(expoPushToken,accountID,Device.modelName  || "")
       else if (expoPushToken!="")
         updateToken(expoPushToken,accountID)
 
-      }
-      else{
-        await AsyncStorage.removeItem("account")
-        navigation.navigate('Home', { accountID: 0 });
       }
     } catch (error) {
       navigation.navigate('Home', { accountID: 0 });
@@ -151,7 +146,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    fetchData();
+    fetchData(true);
 
     setTimeout(() => {
       setRefreshing(false);
@@ -377,14 +372,6 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#3b5998',
-  },
   tasks: {
     marginBottom: 50,
     marginTop: 30,
