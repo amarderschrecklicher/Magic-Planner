@@ -44,7 +44,6 @@ export default function ChatScreen({navigation, route }:{navigation:any,route:an
                     user: data.user
                 };
             });
-            console.log(receivedMessages); 
             setMessages(receivedMessages); 
         });
     } catch (error:any) {

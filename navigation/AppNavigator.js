@@ -13,20 +13,21 @@ import TasksScreen from "../screens/TasksScreen";
 import SubTasksScreen from "../screens/SubTasksScreen";
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const BottomNavigator = ( {route} ) =>  {
+const BottomNavigator =  ( {route} ) =>  {
 
-  const { accountID } = route.params; 
+  const { accountID, email } = route.params; 
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen 
         name="Tasks"
         component={TasksScreen}
-        initialParams={{ accountID: accountID }}
+        initialParams={{ accountID: accountID, email: email }}
         options={{
           title: "Taskovi",
           tabBarIcon: ({ color, size }) => (
@@ -37,7 +38,7 @@ const BottomNavigator = ( {route} ) =>  {
       <Tab.Screen 
         name="Materijali" 
         component={MaterialsScreen}
-        initialParams={{ accountID: accountID }}
+        initialParams={{ accountID: accountID, email: email }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
@@ -48,7 +49,7 @@ const BottomNavigator = ( {route} ) =>  {
   );
 };
 
-const AppNavigator = ({accountID}) => {
+const AppNavigator = ({accountID,email}) => {
   const initialRouteName = accountID > 0 ? "BottomNavigator" : "Home";
 
   return (
@@ -67,7 +68,7 @@ const AppNavigator = ({accountID}) => {
           <Stack.Screen
             name="BottomNavigator"
             component={BottomNavigator}
-            initialParams={{ accountID: accountID }}
+            initialParams={{ accountID: accountID, email:email }}
             options={{
               title: "Tasks",
               headerShown: false,

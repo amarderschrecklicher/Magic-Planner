@@ -22,6 +22,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const [isAuthenticated, setAuhenticated] = useState(false);
   const [id, setId] = useState(0);
   const [nonExistentAccount, setNonExistentAccount] = useState(false);
+  const [email,setEmail]=useState("")
 
   useEffect(() => {
     fetchCodes();
@@ -59,6 +60,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
         );
         setAuhenticated(true);
         setId(string.child.id);
+        setEmail(string.child.email)
         findAccount = true;
       }
     });
@@ -72,7 +74,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
       routes: [
         {
           name: "BottomNavigator",
-          params: { accountID: id },
+          params: { accountID: id,email: email },
         },
       ],
     });

@@ -11,11 +11,14 @@ import { auth } from "@/modules/firebase";
 
 export default function App() {
   const [accountID, setAccountID] = useState<number | null>(null);
+  const [email,setEmail]=useState("")
 
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("account");
-      const email = await AsyncStorage.getItem("email");
+      let email = await AsyncStorage.getItem("email");
+      if(email)
+      setEmail(email)
       const password = await AsyncStorage.getItem("password");
 
       console.log("Id u async storage: " + value);
@@ -41,7 +44,7 @@ export default function App() {
     return (
       <>
         <StatusBar hidden />
-        <AppNavigator accountID={accountID}/>
+        <AppNavigator accountID={accountID} email={email}/>
       </>
     );
   }

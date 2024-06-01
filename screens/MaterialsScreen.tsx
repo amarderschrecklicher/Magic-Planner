@@ -34,7 +34,7 @@ const MaterialsScreen = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [settings, setSettings] = useState(null);
-  const { accountID } = route.params;
+  const { accountID, email } = route.params;
 
   useEffect(() => {
     fetchData();
@@ -137,11 +137,11 @@ const MaterialsScreen = ({ navigation, route }) => {
   };
 
   const handleChatPress = () => {
-    navigation.navigate('Chat', { email: settings.email, accountID: accountID });
+    navigation.navigate('Chat', { email: email, accountID: accountID });
   };
 
   const handleSOSPress = () => {
-    navigation.navigate('Chat', { sos: 'SOS', email: settings.email, accountID: accountID });
+    navigation.navigate('Chat', { sos: 'SOS', email: email, accountID: accountID });
   };
 
   if (!settings) {

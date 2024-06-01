@@ -261,7 +261,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
         <View style={styles.header}>
           <CurrentDate settings={settings} />
           <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
-            <SimpleLineIcons name="logout" size={40}></SimpleLineIcons>
+            <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
           </TouchableOpacity>
         </View>
         <WelcomeMessage name={kidName} male={maleKid} settings={settings} />
