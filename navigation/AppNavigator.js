@@ -36,7 +36,7 @@ const BottomNavigator =  ( {route} ) =>  {
         }} 
       />
       <Tab.Screen 
-        name="Materijali" 
+        name="Instrukcije"
         component={MaterialsScreen}
         initialParams={{ accountID: accountID, email: email }}
         options={{
