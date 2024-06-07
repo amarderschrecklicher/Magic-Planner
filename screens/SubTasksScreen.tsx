@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   startButton: {
-    backgroundColor: '#002366',
+    backgroundColor: '#07255d',
     padding: 15,
     borderRadius: 30,
     alignItems: 'center',
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   startButtonDisabled: {
-    backgroundColor: '#CBC3E3', // Dimmer color for disabled state
+    backgroundColor: '#CBC3E3',
     padding: 15,
     borderRadius: 30,
     alignItems: 'center',

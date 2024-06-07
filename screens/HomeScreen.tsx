@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   scanButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#07255d",
     padding: 15,
     borderRadius: 20,
     alignItems: "center",
