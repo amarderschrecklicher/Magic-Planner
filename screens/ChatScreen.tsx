@@ -128,7 +128,7 @@ return (
           setNewMessage('');
         }}
       >
-        <FontAwesome name="paper-plane" size={24} color="white" />
+        <FontAwesome name="paper-plane" size={20} color="white" />
       </TouchableOpacity>
     </View>
   </KeyboardAvoidingView>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   messageSent: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#07255d',
     color:"white"
   },
   messageReceived: {
@@ -189,13 +189,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: '#07255d',
     borderRadius: 25,
     marginRight: 10,
   },
   sendButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
+    backgroundColor: '#07255d',
+    padding: 12,
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',

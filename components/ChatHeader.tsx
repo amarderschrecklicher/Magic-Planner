@@ -33,22 +33,22 @@ const styles = StyleSheet.create({
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center', // Center horizontally
-      paddingHorizontal: 16,
-      paddingTop: Platform.OS === 'ios' ? screenHeight * 0.05 : screenHeight * 0.03,
+      justifyContent: 'center',
+      paddingHorizontal: 12,
+      paddingTop: Platform.OS === 'ios' ? screenHeight * 0.01 : screenHeight * 0.01,
       paddingBottom: screenHeight * 0.01,
       backgroundColor: '#fff',
       borderBottomWidth: 1,
       borderBottomColor: '#ddd',
-      height: Platform.OS === 'ios' ? screenHeight * 0.12 : screenHeight * 0.12,
+      height: Platform.OS === 'ios' ? screenHeight * 0.08 : screenHeight * 0.8,
     },
     backButtonContainer: {
-      flexDirection: 'row', // Align icon and text horizontally
-      alignItems: 'center', // Center vertically
+      flexDirection: 'row',
+      alignItems: 'center',
       position: 'absolute',
     },
     backButton: {
-      marginRight: 8, // Add margin between icon and text
+      marginRight: 8,
     },
     backButtonText: {
       fontSize: screenWidth * 0.04,
@@ -58,10 +58,10 @@ const styles = StyleSheet.create({
     title: {
       fontSize: screenWidth * 0.05,
       fontWeight: 'bold',
-      textAlign: 'center', // Center the title text
-      flex: 1, // Allow the title to expand to fill the space
+      textAlign: 'center',
+      flex: 1,
     },
   });
-  
+
 
 export default ChatHeader;
