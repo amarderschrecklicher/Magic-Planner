@@ -52,6 +52,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const { accountID } = route.params;
+  const [storedToken, setStoredToken] = useState("no");
   
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -60,6 +61,39 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       shouldSetBadge: false,
     }),
   });
+
+  useEffect(() => {
+    const getStoredToken = async () => {
+      const { token } = await fetchTokens(accountID);
+      setStoredToken(token);
+    };
+
+    getStoredToken();
+  }, [accountID]);
+
+  // Fetch the push notification token
+  useEffect(() => {
+    const getToken = async () => {
+      const Token = await registerForPushNotificationsAsync();
+      if (Token && Token.data !== "") {
+        setExpoPushToken(Token.data);
+      }
+    };
+
+    getToken();
+  }, []);
+
+  // Update the database with the new token if necessary
+  useEffect(() => {
+    if (expoPushToken) {
+      if (storedToken==undefined && expoPushToken !== "") {
+        console.log("Novi token dodat!")
+        addToken(expoPushToken, accountID, Device.modelName || "");
+      } else if (expoPushToken !== "") {
+        updateToken(expoPushToken, accountID);
+      }
+    }
+  }, [expoPushToken, storedToken, accountID]);
 
   useEffect(() => {
     fetchData(false);
@@ -121,23 +155,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
       if(settingsData)  
         setSettings(settingsData);
-      
-      if(!refresh){
-
-      await registerForPushNotificationsAsync().then(token => {
-        if(token && token.data!="")
-          setExpoPushToken(token.data)
-        }
-      );
-
-      const { token } = await fetchTokens(accountID)
-
-      if(token == null || token == undefined)   
-        addToken(expoPushToken,accountID,Device.modelName  || "")
-      else if (expoPushToken!="")
-        updateToken(expoPushToken,accountID)
-
-      }
+           
     } catch (error) {
       navigation.navigate('Home', { accountID: 0 });
       console.error("Failed to fetch data in TasksScreen:", error);
@@ -373,8 +391,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
 const styles = StyleSheet.create({
   tasks: {
-    marginBottom: 50,
-    marginTop: 30,
+
   },
   title: {
     fontSize: 24,

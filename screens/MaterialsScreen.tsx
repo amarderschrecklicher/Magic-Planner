@@ -28,7 +28,7 @@ import LoadingAnimation from '../components/LoadingAnimation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
 
-const MaterialsScreen = ({ navigation, route }) => {
+const MaterialsScreen = ({ navigation, route }:{ navigation:any, route:any }) => {
   const [materials, setMaterials] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
