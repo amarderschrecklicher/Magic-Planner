@@ -38,7 +38,7 @@ export default function HomeScreen({ navigation, route }:{ navigation:any, route
       else {
         Alert.alert(
           "Permission needed",
-          "Da biste koristili aplikaciju Magic Planner, potrebno je da dozvolite korištenje kamere u postavkama",
+          "Da biste koristili aplikaciju Assistify, potrebno je da dozvolite korištenje kamere u postavkama",
           [
             {
               text: "Cancel",
@@ -63,8 +63,8 @@ export default function HomeScreen({ navigation, route }:{ navigation:any, route
     <View style={styles.container}>
       <View style={styles.image}>
         <Image
-          style={{ height: 350, resizeMode: "contain" }}
-          source={require("../assets/images/MagicPlanner.png")}
+          style={{ height: "38%", resizeMode: "contain" }}
+          source={require("../assets/images/logoapp.png")}
         ></Image>
       </View>
       <TouchableOpacity style={styles.scanButton} onPress={handleScanButton}>
@@ -81,13 +81,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    marginTop: 80,
-    marginRight: 10,
+    marginTop: 230,
   },
   scanButton: {
     backgroundColor: "#07255d",
     padding: 15,
-    borderRadius: 20,
+    borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
