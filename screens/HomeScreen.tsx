@@ -68,7 +68,7 @@ export default function HomeScreen({ navigation, route }:{ navigation:any, route
         ></Image>
       </View>
       <TouchableOpacity style={styles.scanButton} onPress={handleScanButton}>
-        <Text style={styles.text}>Skeniraj QR kod za prijavu</Text>
+        <Text style={styles.text}>SKENIRAJ QR KOD</Text>
       </TouchableOpacity>
     </View>
   );
@@ -92,10 +92,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     elevation: 5,
+    width: '73%',
   },
   text: {
     color: "white",
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 21,
+    fontWeight: '600',
   },
 });

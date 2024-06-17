@@ -8,7 +8,7 @@ import moment from 'moment';
 
 
 
-const API_BASE_URL = "http://192.168.1.107:8080";
+const API_BASE_URL = "http://192.168.0.25:8080";
 
 
 export interface AccountData {
