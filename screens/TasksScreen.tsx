@@ -63,8 +63,9 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   });
 
   useEffect(() => {
-    const getStoredToken = async () => {
+    const getStoredToken = async () => { 
       const { token } = await fetchTokens(accountID);
+     
       setStoredToken(token);
     };
 
@@ -85,11 +86,13 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
   // Update the database with the new token if necessary
   useEffect(() => {
-    if (expoPushToken) {
-      if (storedToken==undefined && expoPushToken !== "") {
+    
+    if (expoPushToken && storedToken==undefined) {
+      if (expoPushToken !== "") {
         console.log("Novi token dodat!")
         addToken(expoPushToken, accountID, Device.modelName || "");
-      } else if (expoPushToken !== "") {
+      } else if (expoPushToken !== "" && expoPushToken!=storedToken) {
+        console.log("Token updatean!")
         updateToken(expoPushToken, accountID);
       }
     }

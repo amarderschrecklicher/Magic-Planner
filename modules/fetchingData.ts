@@ -1,14 +1,12 @@
 import { todayTask, compareTimes } from "./dateModules";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { auth } from './firebase';
 import { Platform, Task } from "react-native";
 import Constants from "expo-constants";
 import moment from 'moment';
 
 
-
-const API_BASE_URL = "http://192.168.0.25:8080";
+const API_BASE_URL = "https://magicplannerbe-production.up.railway.app";
 
 
 export interface AccountData {
