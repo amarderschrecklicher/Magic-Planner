@@ -244,7 +244,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     priorityTasks == null ||
     normalTasks == null ||
     kidName == null ||
-    //ne zaboravi dodat maleKid
+    maleKid == null ||
     settings == null ||
     expoPushToken==""
   ){
