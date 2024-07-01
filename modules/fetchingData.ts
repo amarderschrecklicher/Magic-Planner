@@ -222,7 +222,23 @@ export async function updateToken(newToken:string,id:number) {
       })
     });
   } catch (error) {
-    console.error("Failed to update finished task in Task:", error);
+    console.error("Failed to update token", error);
+  }
+}
+
+export async function deleteToken(token:string ) {
+  try {
+    await fetch(`${API_BASE_URL}/api/v1/token`, {
+      method: "DELETE", 
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        token: token,
+      })
+    });
+  } catch (error) {
+    console.error("Failed to delete token", error);
   }
 }
 

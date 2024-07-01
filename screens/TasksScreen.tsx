@@ -24,7 +24,8 @@ import {
   updateToken,
   SettingsData,
   SubTaskData,
-  TaskData
+  TaskData,
+  deleteToken
 } from "../modules/fetchingData";
 import CurrentDate from "../components/CurrentDate";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -189,6 +190,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
   const logout = async () => {
     try {
+      deleteToken(expoPushToken)
       await AsyncStorage.removeItem("account");
       navigation.dispatch(
         CommonActions.reset({
