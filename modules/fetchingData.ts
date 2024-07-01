@@ -251,7 +251,7 @@ export async function addToken(newToken:string,id:number,modelId:string) {
       },
       body: JSON.stringify({
         accountId: id,
-        modelId: modelId,
+        modelId: modelId+"---"+newToken,
         token: newToken
       })
     });
