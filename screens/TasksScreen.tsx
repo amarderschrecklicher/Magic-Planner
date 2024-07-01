@@ -107,20 +107,15 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     });
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification: Notification) => {
-      const taskName = notification.request.content.body || undefined;
-      const id = notification.request.content.data.taskId as string;
+      const title = notification.request.content.title || ""
       setNotification(notification as Notification);
-
-      Alert.alert(
-        "Imaš novi task!",
-        taskName,
-        [{ text: "Pogledaj task", onPress: () => handleOKPress(id) }]
-      );
+      if(title == "Imaš novi task!")
+      onRefresh()
     });
     
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response: NotificationResponse) => {
-      console.log(response);
+      onRefresh()
     });
         
     return () => {
