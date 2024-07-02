@@ -60,7 +60,7 @@ const onSendMessage = async (e:any) => {
   const message = {
       text: newMessage,
       user: {
-          _id: accountID,
+          _id: accountID+1000000000000,
           avatar: 'https://i.pravatar.cc/300'
       },
       createdAt: serverTimestamp() 
@@ -89,18 +89,18 @@ return (
           key={item._id}
           style={[
             styles.messageContainer,
-            item.user._id === accountID ? styles.sent : styles.received,
+            item.user._id === accountID+1000000000000 ? styles.sent : styles.received,
           ]}
         >
           <View
             style={[
               styles.message,
-              item.user._id === accountID ? styles.messageSent : styles.messageReceived,
+              item.user._id === accountID+1000000000000 ? styles.messageSent : styles.messageReceived,
             ]}
           >
-            <Text style={item.user._id === accountID ?styles.textSent:styles.textRecieved}>{item.text}</Text>
+            <Text style={item.user._id === accountID+1000000000000 ?styles.textSent:styles.textRecieved}>{item.text}</Text>
             <View style={styles.messageTime}>
-              <Text style={styles.smallText}>
+              <Text style={item.user._id === accountID+1000000000000 ?styles.smallTextSent:styles.smallTextRec}>
                 {new Date(item.createdAt).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
@@ -170,9 +170,13 @@ const styles = StyleSheet.create({
   messageReceived: {
     backgroundColor: '#E5E5EA',
   },
-  smallText: {
+  smallTextRec: {
     fontSize: 10,
     color: '#555',
+  },
+  smallTextSent: {
+    fontSize: 10,
+    color: 'white',
   },
   messageTime: {
     alignSelf: 'flex-end',
