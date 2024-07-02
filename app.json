@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.amartc.assitify"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +24,8 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.amartc.assitify"
     },
     "web": {
       "bundler": "metro",
