@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "magic-planner",
-    "slug": "magic-planner",
+    "slug": "assitify",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,7 +19,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -47,6 +51,7 @@
       "eas": {
         "projectId": "176c4c21-9c62-4311-a5d2-566380f957d6"
       }
-    }
+    },
+    "owner": "amartc"
   }
 }
