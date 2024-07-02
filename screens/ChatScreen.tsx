@@ -56,7 +56,7 @@ const onSendMessage = async (e:any) => {
   e.preventDefault();
 
   if (newMessage.trim() === '') return;
-
+  console.log(accountID)
   const message = {
       text: newMessage,
       user: {

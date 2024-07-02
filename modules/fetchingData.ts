@@ -98,7 +98,7 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
           difficulty: element.difficulty,
           start : element.start? moment(element.start).format('DD.MM.YYYY. u HH:mm') : null,
           end: element.end? moment(element.end).format('DD.MM.YYYY. u HH:mm') : null,
-          overDo : todayTask(element.dueDate)
+          overDo : todayTask(element.dueDate,element.dueTime)
         }        
         if (element.priority) priority.push(task);
         else normal.push(task);
