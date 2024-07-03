@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderBottomWidth: 1,
       borderBottomColor: '#ddd',
-      height: Platform.OS === 'ios' ? screenHeight * 0.08 : screenHeight * 0.8,
+      height: Platform.OS === 'ios' ? screenHeight * 0.08 : screenHeight * 0.1,
     },
     backButtonContainer: {
       flexDirection: 'row',

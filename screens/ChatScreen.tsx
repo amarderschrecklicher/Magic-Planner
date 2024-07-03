@@ -11,6 +11,7 @@ import {
 import { database } from '../modules/firebase';
 import ChatHeader from '../components/ChatHeader';
 import { FontAwesome } from '@expo/vector-icons';
+import {StatusBar} from "expo-status-bar";
 
 export default function ChatScreen({navigation, route }:{navigation:any,route:any}) {
 
@@ -80,6 +81,10 @@ return (
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
   >
+  <StatusBar style="dark"
+    translucent={true}
+    hidden={false}
+    />
     <ChatHeader title={'Poruke'}></ChatHeader>
     <FlatList
       inverted

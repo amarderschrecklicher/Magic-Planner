@@ -35,6 +35,7 @@ import { Notification, NotificationResponse } from 'expo-notifications';
 import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
+import {StatusBar} from "expo-status-bar";
 
 
 export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
@@ -245,8 +246,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     normalTasks == null ||
     kidName == null ||
     maleKid == null ||
-    settings == null ||
-    expoPushToken==""
+    settings == null
   ){
     return <LoadingAnimation />;
   }
@@ -256,6 +256,12 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   ){
     return (
       <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
+        <StatusBar style="auto"
+                       translucent={true}
+                       hidden={false}
+                       backgroundColor={settings.colorForBackground}
+                       
+            />
         <ScrollView
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
