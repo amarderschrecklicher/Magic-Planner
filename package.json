@@ -41,6 +41,7 @@
     "lottie-react-native": "6.7.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
+    "native-notify": "^4.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.1",

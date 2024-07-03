@@ -8,10 +8,12 @@ import AppNavigator from '../navigation/AppNavigator';
 import React from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/modules/firebase";
+import registerNNPushToken from "native-notify";
 
 export default function App() {
   const [accountID, setAccountID] = useState<number | null>(null);
   const [email,setEmail]=useState("")
+  registerNNPushToken(22259, 'xldIGxZI7b0qgDgbFDRgUP');
 
   const getData = async () => {
     try {
