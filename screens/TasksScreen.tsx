@@ -36,7 +36,8 @@ import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
 import {StatusBar} from "expo-status-bar";
-
+import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import axios from "axios";
 
 export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
 
@@ -78,8 +79,9 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   useEffect(() => {
     const getToken = async () => {
       const Token = await registerForPushNotificationsAsync();
-      if (Token && Token.data !== "") {
+      if (Token && Token.data !== "" && email!="") {
         setExpoPushToken(Token.data);
+        registerIndieID(`${email}`, 22259, 'xldIGxZI7b0qgDgbFDRgUP');
       }
     };
 
@@ -191,6 +193,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
   const logout = async () => {
     try {
+      unregisterIndieDevice(`${email}`, 22259, 'xldIGxZI7b0qgDgbFDRgUP');
       deleteToken(expoPushToken)
       await AsyncStorage.removeItem("account");
       navigation.dispatch(
@@ -231,12 +234,6 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       email: email,
       accountID: accountID
     });
-  };
-
-  const handleOKPress = (task:any) =>{
-    onRefresh();
-    //handleTaskPress(task);
-    console.log("Notification acknowledged")
   };
     
 
