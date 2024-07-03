@@ -25,7 +25,9 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.amartc.assitify"
+      "package": "com.amartc.assitify",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi":true
     },
     "web": {
       "bundler": "metro",
