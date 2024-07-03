@@ -8,25 +8,25 @@ import AppNavigator from '../navigation/AppNavigator';
 import React from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/modules/firebase";
-import registerNNPushToken from "native-notify";
+import registerNNPushToken, { registerIndieID } from "native-notify";
 
 export default function App() {
   const [accountID, setAccountID] = useState<number | null>(null);
   const [email,setEmail]=useState("")
   registerNNPushToken(22259, 'xldIGxZI7b0qgDgbFDRgUP');
-
+  
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("account");
-      let email = await AsyncStorage.getItem("email");
+      const email = await AsyncStorage.getItem("email");
       if(email)
       setEmail(email)
       const password = await AsyncStorage.getItem("password");
 
-      console.log("Id u async storage: " + value);
+      console.log("Email u async storage: " + email);
       if (value && email && password) {
         const id = parseInt(value);
-        setAccountID(id);
+        setAccountID(id);        
         await signInWithEmailAndPassword(auth, email, password);
         console.log("Login success");
       } else setAccountID(0);

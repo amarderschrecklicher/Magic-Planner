@@ -13,7 +13,7 @@ import TasksScreen from "../screens/TasksScreen";
 import SubTasksScreen from "../screens/SubTasksScreen";
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { registerIndieID, unregisterIndieDevice } from "native-notify";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,6 +21,7 @@ const Tab = createBottomTabNavigator();
 const BottomNavigator =  ( {route} ) =>  {
 
   const { accountID, email } = route.params; 
+  registerIndieID(`${email}`, 22259, 'xldIGxZI7b0qgDgbFDRgUP');
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>

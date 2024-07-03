@@ -37,7 +37,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
 import {StatusBar} from "expo-status-bar";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
-import axios from "axios";
 
 export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
 
@@ -78,10 +77,9 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   // Fetch the push notification token
   useEffect(() => {
     const getToken = async () => {
-      const Token = await registerForPushNotificationsAsync();
-      if (Token && Token.data !== "" && email!="") {
-        setExpoPushToken(Token.data);
-        registerIndieID(`${email}`, 22259, 'xldIGxZI7b0qgDgbFDRgUP');
+//      const Token = await registerForPushNotificationsAsync();
+     if ( email!="") {
+        // setExpoPushToken(Token.data);
       }
     };
 
@@ -196,6 +194,8 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       unregisterIndieDevice(`${email}`, 22259, 'xldIGxZI7b0qgDgbFDRgUP');
       deleteToken(expoPushToken)
       await AsyncStorage.removeItem("account");
+      await AsyncStorage.removeItem("email");
+      await AsyncStorage.removeItem("password");
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
