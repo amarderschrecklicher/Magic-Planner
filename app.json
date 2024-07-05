@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/react-logo.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -43,7 +43,14 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+            "icon": "./local/assets/notification-icon.png",
+            "color": "#ffffff"
+        }
+     ]
     ],
     "experiments": {
       "typedRoutes": true
