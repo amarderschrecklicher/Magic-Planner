@@ -171,10 +171,16 @@ export async function fetchSettings(accountID:number): Promise<SettingsData | un
   }
 }
 
-export async function updateFinishedSubTasks(id:number) {
+export async function updateFinishedSubTasks(id:number,done:boolean | null) {
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/sub/done/${id}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        done:done
+      })
     });
   } catch (error) {
     console.error("Failed to update finished task in subTaks:", error);

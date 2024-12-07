@@ -21,7 +21,7 @@ export default function SubTask({ started, subTask, subTaskColor, settings }: { 
       setModalVisible(true); // Open modal when checkbox is checked
     } else if (!isChecked) {
       // Immediately update the subtask if no photo is required
-      updateFinishedSubTasks(subTask.id);
+      updateFinishedSubTasks(subTask.id,true);
       setChecked(true);
     }
 
@@ -30,17 +30,17 @@ export default function SubTask({ started, subTask, subTaskColor, settings }: { 
   const takePhoto = async () => {
     if (cameraRef.current) {
       const result = await cameraRef.current.takePictureAsync();
-      
-      if (result){
+
+      if (result) {
         const manipulatedImage = await ImageManipulator.manipulateAsync(
           result.uri,
           [],
           { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
         );
-      
+
         setPhoto({ uri: manipulatedImage.uri, width: manipulatedImage.width, height: manipulatedImage.height }); // Save the photo URI
-    }
-  };
+      }
+    };
   }
 
   const confirmPhoto = async () => {
@@ -83,11 +83,12 @@ export default function SubTask({ started, subTask, subTaskColor, settings }: { 
           }
         );
 
+        setChecked(null);
         setModalVisible(false);
         setPhoto(null);
-        updateFinishedSubTasks(subTask.id);
+        updateFinishedSubTasks(subTask.id,null);
         setNeedsValidation(true);
-        setChecked(true);
+
       }
       catch (error) {
         console.error("Error uploading photo:", error);
@@ -125,20 +126,18 @@ export default function SubTask({ started, subTask, subTaskColor, settings }: { 
           {subTask.description}
         </Text>
       </View>
-      <View style={isChecked ? { opacity: 0.6 } : { opacity: 1 }}>
-        <Checkbox
-          style={styles.checkbox}
-          color={
-            isChecked === true
-               ? settings.colorForProgress
-              : isChecked === null
-              ? "gray" 
-              : undefined
-          }
-          value={isChecked === true}
-          onValueChange={handleCheckboxChange}
-          disabled={!started}
-        />
+      <View style={styles.checkboxContainer}>
+        {subTask.needPhoto && isChecked === null ? (
+          <Text style={styles.waitingIcon}>⏳</Text> // You can replace this with an icon if needed
+        ) : (
+          <Checkbox
+            style={styles.checkbox}
+            color={isChecked ? settings.colorForProgress : undefined}
+            value={isChecked}
+            onValueChange={handleCheckboxChange}
+            disabled={!started}
+          />
+        )}
       </View>
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <View style={styles.cameraContainer}>
@@ -173,6 +172,12 @@ export default function SubTask({ started, subTask, subTaskColor, settings }: { 
 }
 
 const styles = StyleSheet.create({
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Center the content horizontally
+    marginTop: 10, // Add spacing if needed
+  },
   container: {
     flex: 1,
     flexDirection: "row",
@@ -228,11 +233,16 @@ const styles = StyleSheet.create({
   image: {
     maxWidth: "90%",
     maxHeight: "90%",
-    resizeMode: "contain", // Ensures the image is displayed correctly
+    resizeMode: "contain",
   },
   buttons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginTop: 20,
+  },
+  waitingIcon: {
+    fontSize: 36,
+    color: "gray",
+    textAlign: "center",
   },
 });
