@@ -12,6 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true, 
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.amartc.assitify"
@@ -27,7 +28,7 @@
       ],
       "package": "com.amartc.assitify",
       "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi":true
+      "useNextNotificationsApi": true
     },
     "web": {
       "bundler": "metro",
@@ -47,10 +48,11 @@
       [
         "expo-notifications",
         {
-            "icon": "./local/assets/notification-icon.png",
-            "color": "#ffffff"
+          "icon": "./local/assets/notification-icon.png",
+          "color": "#ffffff"
         }
-     ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

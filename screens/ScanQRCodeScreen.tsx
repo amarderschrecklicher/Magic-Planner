@@ -26,6 +26,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
 
   useEffect(() => {
     fetchCodes();
+    console.log(stringCodes)
   }, []);
 
   async function fetchCodes() {
@@ -48,7 +49,7 @@ export default function ScanQRCodeScreen({ navigation }:{ navigation:any }) {
   const handleBarCodeScanned = async ({ type, data }:{ type:any, data:any }) => {
     setScanned(true);
     let findAccount = false;
-
+    console.log(stringCodes)
     stringCodes.forEach((string: any)  => {
       if (string.phoneLoginString == data) {
         storeData(string.child);

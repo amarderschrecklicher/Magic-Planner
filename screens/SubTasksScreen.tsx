@@ -45,7 +45,7 @@ export default function SubTasksScreen({navigation, route }:{navigation:any,rout
     <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
       <View>
         <CurrentDate settings={settings} />
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Tasks")}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={50} />
         </TouchableOpacity>
       </View>

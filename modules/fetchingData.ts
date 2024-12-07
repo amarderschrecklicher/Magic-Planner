@@ -4,10 +4,14 @@ import * as Notifications from 'expo-notifications';
 import { Platform, Task } from "react-native";
 import Constants from "expo-constants";
 import moment from 'moment';
+import {
+  collection,
+  addDoc,
+} from 'firebase/firestore';
+import { database } from '../modules/firebase';
 
-
-const API_BASE_URL = "https://magicplannerbe-production.up.railway.app";
-
+//const API_BASE_URL = "https://magicplannerbe-production.up.railway.app";
+const API_BASE_URL = 'http://192.168.0.17:8080';
 
 
 export interface AccountData {
@@ -38,6 +42,7 @@ export interface SubTaskData {
   name: string,
   done: boolean,
   description: string,
+  needPhoto: boolean
 }
 
 export interface SettingsData{
@@ -133,6 +138,7 @@ export async function fetchSubTasks(tasks: TaskData[]): Promise<Map<number, SubT
       if (data.length !== 0) {
         temp.set(task.id, data);
       }
+      console.log(data[0])
     }
 
     return temp;
@@ -186,6 +192,7 @@ export async function updateFinishedTask(id:number) {
 }
 
 export async function updateStartedTask(id:number) {
+  console.log("uso")
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/start/${id}`, {
       method: "PUT",
@@ -198,7 +205,6 @@ export async function updateStartedTask(id:number) {
 export async function fetchStringCodes() {
   const response = await fetch(`${API_BASE_URL}/api/v1/account/settings`);
   const data = await response.json();
-  
   return data;
 }
 
@@ -297,4 +303,21 @@ export async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
   return token;
+}
+
+export async function saveMaterial(name:string, fileType:string, url:string, createdAt:string) {
+  try {
+      const materialData = {
+          name: name,
+          contentType: fileType,
+          downloadURL: url,
+          created: createdAt,
+      };
+  
+      const docRef = await addDoc(collection(database, 'task_photos'), materialData);
+      console.log('Material added with ID: ', docRef.id);
+  } 
+  catch (error) {
+      console.error('Error adding material: ', error);
+  }
 }

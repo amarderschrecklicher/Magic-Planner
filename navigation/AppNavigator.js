@@ -4,7 +4,6 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ChatScreen from "../screens/ChatScreen";
 import HomeScreen from "../screens/HomeScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
@@ -14,6 +13,8 @@ import SubTasksScreen from "../screens/SubTasksScreen";
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
