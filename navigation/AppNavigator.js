@@ -9,6 +9,7 @@ import HomeScreen from "../screens/HomeScreen";
 import MaterialsScreen from "../screens/MaterialsScreen";
 import ScanQRCodeScreen from "../screens/ScanQRCodeScreen";
 import TasksScreen from "../screens/TasksScreen";
+import ProgressScreen from "../screens/ProgressScreen";
 import SubTasksScreen from "../screens/SubTasksScreen";
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from "@react-navigation/stack";
@@ -34,6 +35,17 @@ const BottomNavigator =  ( {route} ) =>  {
           title: "Taskovi",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }} 
+      />
+      <Tab.Screen 
+        name="Progress"
+        component={ProgressScreen}
+        initialParams={{ accountID: accountID, email: email }}
+        options={{
+          title: "Progress",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="checkmark-circle-outline" size={size} color={color} />
           ),
         }} 
       />

@@ -79,7 +79,7 @@ export async function fetchAccount(accountID: number): Promise< AccountData | un
 }
 
 
-export async function fetchTasks(accountID: number): Promise<{ data: any[], priority: TaskData[], normal: TaskData[] } | undefined> {
+export async function fetchTasks(accountID: number): Promise<{ data: any[], priority: TaskData[], normal: TaskData[], finished: TaskData[] } | undefined> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/v1/task/${accountID}`);
     if (!response.ok) {
@@ -88,9 +88,10 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
     const data = await response.json();
     let priority: TaskData[] = [];
     let normal: TaskData[] = [];
+    let finished: TaskData[] = [];
 
     data.forEach((element: any) => {
-      if (!element.done) {
+
 
         let task : TaskData = {
           id: element.id,
@@ -104,17 +105,21 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
           start : element.start? moment(element.start).format('DD.MM.YYYY. u HH:mm') : null,
           end: element.end? moment(element.end).format('DD.MM.YYYY. u HH:mm') : null,
           overDo : todayTask(element.dueDate,element.dueTime)
-        }        
-        if (element.priority) priority.push(task);
-        else normal.push(task);
+        }      
+        if (!element.done) {        
+          if (element.priority) priority.push(task);
+          else normal.push(task);
+      }
+      else{
+        finished.push(task);
       }
     });
 
     priority.sort((a: any, b: any) => compareTimes(a, b));
     normal.sort((a: any, b: any) => compareTimes(a, b));
 
-
-    return { data, priority, normal };
+    console.log(data)
+    return { data, priority, normal, finished };
   } catch (error) {
     console.error("Failed to fetch tasks in TasksScreen:", error);
     return undefined;

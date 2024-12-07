@@ -47,6 +47,7 @@ export default function Task({
               fontSize: settings.fontSize + 1,
               color: settings.colorForFont,
               fontFamily: settings.font,
+              marginBottom: 15, 
             },
           ]}
         >
@@ -56,9 +57,10 @@ export default function Task({
           style={{
             fontSize: settings.fontSize,
             color: settings.colorForFont,
-            marginBottom: 20,
+            marginBottom: 40,
             fontFamily: settings.font,
             textDecorationLine: "underline",
+
           }}
         >
           {task.taskName}
@@ -74,32 +76,23 @@ export default function Task({
               },
             ]}
           >
-            Rok izvršavanja:
+            {task.done ? "Završen:" : "Rok izvršavanja:"}
           </Text>
           <Text
             style={{
               fontSize: settings.fontSize,
               color: settings.colorForFont,
               fontFamily: settings.font,
-              textDecorationLine: "underline",
+              textDecorationLine: "none",
+              marginTop: 5,
             }}
           >
-            {task.overDo? task.dueTime:"Rok prošao"}
+            {task.done ? task.end : task.overDo ? task.dueTime : "Rok prošao"}
           </Text>
         </View>
       </View>
-      {/* <Text style={[styles.progressPercent, { fontSize: settings.fontSize }]}>
-        {Math.round((finishedSubTasks * 100) / numberOfSubTasks)} %
-      </Text> */}
-      <View style={styles.progress}>
-        {finishedSubTasks === 0 ? (
-          <Progress.Bar
-            width={null}
-            height={15}
-            borderColor={"black"}
-            borderWidth={2}
-          />
-        ) : (
+      {!task.done && (
+        <View style={styles.progress}>
           <Progress.Bar
             progress={finishedSubTasks / numberOfSubTasks}
             width={null}
@@ -108,17 +101,16 @@ export default function Task({
             borderColor={"black"}
             borderWidth={2}
           />
-        )}
-      </View>
-
-      <Text
-        style={[
-          styles.progressText,
-          { fontSize: settings.fontSize - 1, fontFamily: settings.font },
-        ]}
-      >
-        {finishedSubTasks} od {numberOfSubTasks} završenih podzadataka
-      </Text>
+          <Text
+            style={[
+              styles.progressText,
+              { fontSize: settings.fontSize - 1, fontFamily: settings.font },
+            ]}
+          >
+            {finishedSubTasks} od {numberOfSubTasks} završenih podzadataka
+          </Text>
+        </View>
+      )}
     </>
   );
 }
@@ -134,5 +126,12 @@ const styles = StyleSheet.create({
   progressText: {
     marginTop: 10,
     opacity: 0.8,
+  },
+  time: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  defaultText: {
+    fontWeight: "bold",
   },
 });
