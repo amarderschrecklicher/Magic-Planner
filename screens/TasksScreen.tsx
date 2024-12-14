@@ -35,10 +35,11 @@ import { Notification, NotificationResponse } from 'expo-notifications';
 import * as Device from 'expo-device';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SideButtons from "../components/SideButtons";
-import {StatusBar} from "expo-status-bar";
+import { StatusBar } from "expo-status-bar";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function TasksScreen({ navigation, route }:{navigation:any,route:any}) {
+export default function TasksScreen({ navigation, route }: { navigation: any, route: any }) {
 
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -55,7 +56,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   const [refreshing, setRefreshing] = useState(false);
   const { accountID } = route.params;
   const [storedToken, setStoredToken] = useState("no");
-  
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -65,9 +66,9 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   });
 
   useEffect(() => {
-    const getStoredToken = async () => { 
+    const getStoredToken = async () => {
       const { token } = await fetchTokens(accountID);
-     
+
       setStoredToken(token);
     };
 
@@ -77,8 +78,8 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
   // Fetch the push notification token
   useEffect(() => {
     const getToken = async () => {
-//      const Token = await registerForPushNotificationsAsync();
-     if ( email!="") {
+      //      const Token = await registerForPushNotificationsAsync();
+      if (email != "") {
         // setExpoPushToken(Token.data);
       }
     };
@@ -88,12 +89,12 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
   // Update the database with the new token if necessary
   useEffect(() => {
-    
-    if (expoPushToken && storedToken==undefined) {
+
+    if (expoPushToken && storedToken == undefined) {
       if (expoPushToken !== "") {
         console.log("Novi token dodat!")
         addToken(expoPushToken, accountID, Device.modelName || "");
-      } else if (expoPushToken !== "" && expoPushToken!=storedToken) {
+      } else if (expoPushToken !== "" && expoPushToken != storedToken) {
         console.log("Token updatean!")
         updateToken(expoPushToken, accountID);
       }
@@ -105,57 +106,57 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
 
     const unsubscribe = navigation.addListener("focus", () => {
       fetchData(false);
-      
+
     });
 
     notificationListener.current = Notifications.addNotificationReceivedListener((notification: Notification) => {
       const title = notification.request.content.title || ""
       setNotification(notification as Notification);
-      if(title == "Imaš novi task!")
-      onRefresh()
+      if (title == "Imaš novi task!")
+        onRefresh()
     });
-    
+
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response: NotificationResponse) => {
       onRefresh()
     });
-        
+
     return () => {
       unsubscribe;
       if (notificationListener.current)
-      Notifications.removeNotificationSubscription(notificationListener.current);
+        Notifications.removeNotificationSubscription(notificationListener.current);
       if (responseListener.current)
-      Notifications.removeNotificationSubscription(responseListener.current);
+        Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, [navigation]);
 
-  async function fetchData(refresh:boolean) {
+  async function fetchData(refresh: boolean) {
     try {
 
       const employeeData = await fetchAccount(accountID);
-      
-      if(employeeData){
 
-      setKidName(employeeData.name);
-      setMaleKid(employeeData.gender);
-      setEmail(employeeData.email);
-      setPassword(employeeData.password);
+      if (employeeData) {
+
+        setKidName(employeeData.name);
+        setMaleKid(employeeData.gender);
+        setEmail(employeeData.email);
+        setPassword(employeeData.password);
       }
       const tasksData = await fetchTasks(accountID);
-      
-      if(tasksData){
+
+      if (tasksData) {
         setPriorityTasks(tasksData.priority);
         setNormalTasks(tasksData.normal);
       }
       const subtasksData = await fetchSubTasks(tasksData ? tasksData.data : []);
 
-      if(subtasksData)
+      if (subtasksData)
         setSubTasks(subtasksData);
       const settingsData = await fetchSettings(accountID);
 
-      if(settingsData)  
+      if (settingsData)
         setSettings(settingsData);
-           
+
     } catch (error) {
       navigation.navigate('Home', { accountID: 0 });
       console.error("Failed to fetch data in TasksScreen:", error);
@@ -212,13 +213,13 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     }
   };
 
-  const handleTaskPress = (task:any) => {
-    if(subTasks)
-    navigation.navigate("SubTasks", {
-      task: task,
-      settings: settings,
-      subTasks: subTasks.get(task.id),
-    });
+  const handleTaskPress = (task: any) => {
+    if (subTasks)
+      navigation.navigate("SubTasks", {
+        task: task,
+        settings: settings,
+        subTasks: subTasks.get(task.id),
+      });
   };
 
   const handleChatPress = () => {
@@ -235,7 +236,7 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
       accountID: accountID
     });
   };
-    
+
 
   if (
     subTasks == null ||
@@ -244,163 +245,192 @@ export default function TasksScreen({ navigation, route }:{navigation:any,route:
     kidName == null ||
     maleKid == null ||
     settings == null
-  ){
+  ) {
     return <LoadingAnimation />;
   }
   else if (
     (priorityTasks.length == 0 && normalTasks.length == 0) ||
     subTasks.size == 0
-  ){
+  )
     return (
-      <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
-        <StatusBar style="auto"
-                       translucent={true}
-                       hidden={false}
-                       backgroundColor={settings.colorForBackground}
-                       
-            />
-        <ScrollView
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      <LinearGradient
+        colors={["#FFD700", settings.colorForBackground, "#00457C"]}
+        start={{ x: 0, y: 0 }} // Start at the top
+        end={{ x: 1, y: 0 }} // End at the bottom
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={{ flex: 1 , marginBottom: 20}}>
+          <StatusBar style="auto"
+            translucent={true}
+            hidden={false}
+            backgroundColor={settings.colorForBackground}
+
+          />
+          <ScrollView
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          >
+            <View>
+              <CurrentDate settings={settings} />
+              <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
+                <SimpleLineIcons name="logout" size={40}></SimpleLineIcons>
+              </TouchableOpacity>
+            </View>
+            <CelebrationAnimation kidName={kidName} maleKid={maleKid} settings={settings} />
+          </ScrollView>
+          <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  else {
+    return (
+      <LinearGradient
+        colors={["#B7F2F2", settings.colorForBackground]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }} 
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView
+          style={{ flex: 1 }}
         >
-          <View>
+          <View style={styles.header}>
             <CurrentDate settings={settings} />
             <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
-              <SimpleLineIcons name="logout" size={40}></SimpleLineIcons>
+              <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
             </TouchableOpacity>
-          </View>
-          <CelebrationAnimation kidName={kidName} maleKid={maleKid} settings={settings} />
-        </ScrollView>
-        <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
-      </SafeAreaView>
-    );
-        }
-  else{
-    return (
-      <SafeAreaView
-        style={{ backgroundColor: settings.colorForBackground, flex: 1 }}
-      >
-        <View style={styles.header}>
-          <CurrentDate settings={settings} />
-          <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
-            <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
-          </TouchableOpacity>
-        </View>
-        <WelcomeMessage name={kidName} male={maleKid} settings={settings} />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          {priorityTasks.length != 0 ? (
-            <>
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    fontSize: settings.fontSize + 2,
-                    fontFamily: settings.font,
-                  },
-                ]}
-              >
-                Prioritetni zadaci
-              </Text>
-              <View style={styles.tasks}>
-                <ScrollView
-                  horizontal
-                  decelerationRate={0.9}
-                  snapToInterval={305} //your element width
-                  snapToAlignment={"start"}
-                  showsHorizontalScrollIndicator={false}
-                >
-                  {priorityTasks.map((task) => {
-                    if (!subTasks.get(task.id)) return null;
-                    return (
-                      <View key={task.id}>
-                        <TouchableOpacity
-                          activeOpacity={0.6}
-                          style={styles.taskPressable}
-                          onPress={() => handleTaskPress(task)}
-                        >
-                          <Task
-                            task={task}
-                            settings={settings}
-                            taskColor={settings.colorOfPriorityTask}
-                            subTasks={subTasks.get(task.id)}
-                            updateTaskScreen={fetchData}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            </>
-          ) : undefined}
 
-          {normalTasks.length != 0 ? (
-            <>
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    fontSize: settings.fontSize + 2,
-                    fontFamily: settings.font,
-                  },
-                ]}
-              >
-                Manje prioritetni zadaci
-              </Text>
-              <View style={styles.tasks}>
-                <ScrollView
-                  horizontal
-                  decelerationRate={0.9}
-                  snapToInterval={305} //your element width
-                  snapToAlignment={"start"}
-                  showsHorizontalScrollIndicator={false}
+          </View>
+          
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={{
+              paddingBottom: 100, // Add enough padding for the progress bar and bottom bar
+            }}
+          ><WelcomeMessage name={kidName} male={maleKid} settings={settings} />
+            {priorityTasks.length != 0 ? (
+              <>
+                <Text
+                  style={[
+                    styles.title,
+                    {
+                      fontSize: settings.fontSize + 2,
+                      fontFamily: settings.font,
+                    },
+                  ]}
                 >
-                  {normalTasks.map((task) => {
-                    if (!subTasks.get(task.id)) return null;
-                    return (
-                      <View key={task.id}>
-                        <TouchableOpacity
-                          activeOpacity={0.6}
-                          style={styles.taskPressable}
-                          onPress={() => {
-                            handleTaskPress(task);
-                          }}
-                        >
-                          <Task
-                            task={task}
-                            settings={settings}
-                            taskColor={settings.colorOfNormalTask}
-                            subTasks={subTasks.get(task.id)}
-                            updateTaskScreen={fetchData}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            </>
-          ) : undefined}
-        </ScrollView>
-        <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
-      </SafeAreaView>
+                  Prioritetni zadaci
+                </Text>
+                <View style={styles.tasks}>
+                  <ScrollView
+                    horizontal
+                    decelerationRate={0.9}
+                    snapToInterval={305} //your element width
+                    snapToAlignment={"start"}
+                    showsHorizontalScrollIndicator={false}
+                  >
+                    {priorityTasks.map((task) => {
+                      if (!subTasks.get(task.id)) return null;
+                      return (
+                        <View key={task.id}>
+                          <TouchableOpacity
+                            activeOpacity={0.6}
+                            style={styles.taskPressable}
+                            onPress={() => handleTaskPress(task)}
+                          >
+                            <Task
+                              task={task}
+                              settings={settings}
+                              taskColor={settings.colorOfPriorityTask}
+                              subTasks={subTasks.get(task.id)}
+                              updateTaskScreen={fetchData}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </>
+            ) : undefined}
+
+            {normalTasks.length != 0 ? (
+              <>
+                <Text
+                  style={[
+                    styles.title,
+                    {
+                      fontSize: settings.fontSize + 2,
+                      fontFamily: settings.font,
+                    },
+                  ]}
+                >
+                  Manje prioritetni zadaci
+                </Text>
+                <View style={styles.tasks}>
+                  <ScrollView
+                    horizontal
+                    decelerationRate={0.9}
+                    snapToInterval={305} //your element width
+                    snapToAlignment={"start"}
+                    showsHorizontalScrollIndicator={false}
+                  >
+                    {normalTasks.map((task) => {
+                      if (!subTasks.get(task.id)) return null;
+                      return (
+                        <View key={task.id}>
+                          <TouchableOpacity
+                            activeOpacity={0.6}
+                            style={styles.taskPressable}
+                            onPress={() => {
+                              handleTaskPress(task);
+                            }}
+                          >
+                            <Task
+                              task={task}
+                              settings={settings}
+                              taskColor={settings.colorOfNormalTask}
+                              subTasks={subTasks.get(task.id)}
+                              updateTaskScreen={fetchData}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </>
+            ) : undefined}
+          </ScrollView>
+          <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
+        </SafeAreaView>
+      </LinearGradient>
     );
-}
+  }
 }
 
 const styles = StyleSheet.create({
   tasks: {
 
   },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
   title: {
     fontSize: 24,
     marginLeft: 25,
     marginBottom: 10,
     marginTop: 20,
+    fontWeight: "bold"
   },
   taskPressable: {
     width: 280,

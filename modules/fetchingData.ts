@@ -11,7 +11,7 @@ import {
 import { database } from '../modules/firebase';
 
 //const API_BASE_URL = "https://magicplannerbe-production.up.railway.app";
-const API_BASE_URL = 'http://192.168.0.17:8080';
+const API_BASE_URL = 'http://192.168.0.11:8080';
 
 
 export interface AccountData {
@@ -118,7 +118,6 @@ export async function fetchTasks(accountID: number): Promise<{ data: any[], prio
     priority.sort((a: any, b: any) => compareTimes(a, b));
     normal.sort((a: any, b: any) => compareTimes(a, b));
 
-    console.log(data)
     return { data, priority, normal, finished };
   } catch (error) {
     console.error("Failed to fetch tasks in TasksScreen:", error);
@@ -143,7 +142,7 @@ export async function fetchSubTasks(tasks: TaskData[]): Promise<Map<number, SubT
       if (data.length !== 0) {
         temp.set(task.id, data);
       }
-      console.log(data[0])
+
     }
 
     return temp;
@@ -178,6 +177,7 @@ export async function fetchSettings(accountID:number): Promise<SettingsData | un
 
 export async function updateFinishedSubTasks(id:number,done:boolean | null) {
   try {
+
     await fetch(`${API_BASE_URL}/api/v1/task/sub/done/${id}`, {
       method: "PUT",
       headers: {
@@ -193,7 +193,7 @@ export async function updateFinishedSubTasks(id:number,done:boolean | null) {
 }
 
 export async function updateFinishedTask(id:number) {
-  try {
+  try {    console.log("uso")
     await fetch(`${API_BASE_URL}/api/v1/task/done/${id}`, {
       method: "PUT",
     });
@@ -203,7 +203,6 @@ export async function updateFinishedTask(id:number) {
 }
 
 export async function updateStartedTask(id:number) {
-  console.log("uso")
   try {
     await fetch(`${API_BASE_URL}/api/v1/task/start/${id}`, {
       method: "PUT",
@@ -273,7 +272,7 @@ export async function addToken(newToken:string,id:number,modelId:string) {
       })
     });
     const data = await response.json();
-    console.log(data)
+    console.log("Odgovor za token :"+data)
     return data;
 
   } catch (error) {

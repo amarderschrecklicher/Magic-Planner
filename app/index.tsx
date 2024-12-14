@@ -9,24 +9,25 @@ import React from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/modules/firebase";
 import registerNNPushToken, { registerIndieID } from "native-notify";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   const [accountID, setAccountID] = useState<number | null>(null);
-  const [email,setEmail]=useState("")
+  const [email, setEmail] = useState("")
   registerNNPushToken(22259, 'xldIGxZI7b0qgDgbFDRgUP');
-  
+
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("account");
       const email = await AsyncStorage.getItem("email");
-      if(email)
-      setEmail(email)
+      if (email)
+        setEmail(email)
       const password = await AsyncStorage.getItem("password");
 
       console.log("Email u async storage: " + email);
       if (value && email && password) {
         const id = parseInt(value);
-        setAccountID(id);        
+        setAccountID(id);
         await signInWithEmailAndPassword(auth, email, password);
         console.log("Login success");
       } else setAccountID(0);
@@ -44,10 +45,10 @@ export default function App() {
   if (accountID == null) return <LoadingAnimation />;
   else {
     return (
-      <>
-        <StatusBar hidden />
-        <AppNavigator accountID={accountID} email={email}/>
-      </>
+      <SafeAreaProvider>
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <AppNavigator accountID={accountID} email={email} />
+      </SafeAreaProvider>
     );
   }
 

@@ -44,19 +44,18 @@ export default function ProgressScreen({ navigation, route }: { navigation: any,
             }
             const tasksData = await fetchTasks(accountID);
             if (tasksData) {
-                const completedTasks = tasksData.finished;
-                setFinishedTasks(completedTasks);
+                setFinishedTasks(tasksData.finished);
 
                 const subtasksData = await fetchSubTasks(tasksData ? tasksData.data : []);
 
-                if(subtasksData)
-                  setSubTasks(subtasksData);
+                if (subtasksData)
+                    setSubTasks(subtasksData);
             }
 
             const settingsData = await fetchSettings(accountID);
 
-            if(settingsData)  
-              setSettings(settingsData);
+            if (settingsData)
+                setSettings(settingsData);
         } catch (error) {
             console.error("Failed to fetch data in ProgressScreen:", error);
         }
@@ -116,25 +115,26 @@ export default function ProgressScreen({ navigation, route }: { navigation: any,
             </Text>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}
+                />}
+                contentContainerStyle={{
+                    paddingBottom: 100, // Add enough padding for the progress bar and bottom bar
+                }}
             >
                 <View style={styles.verticalTasks}>
                     {finishedTasks.map((task) => {
                         if (!subTasks.get(task.id)) return null;
                         return (
                             <View key={task.id} style={styles.taskItem}>
-                                <TouchableOpacity
-                                    activeOpacity={0.6}
-                                    style={styles.taskPressable}
-                                    onPress={() => handleTaskPress(task)}
-                                >
+                                <View style={styles.taskPressable}>
                                     <Task
                                         task={task}
                                         settings={settings}
                                         taskColor={settings.colorOfPriorityTask}
                                         subTasks={subTasks.get(task.id)}
+                                        updateTaskScreen={fetchData}
                                     />
-                                </TouchableOpacity>
+                                </View>
                             </View>
                         );
                     })}
@@ -152,23 +152,23 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 15,
-      },
-      verticalTasks: {
+    },
+    verticalTasks: {
         flexDirection: "column",
         alignItems: "center",
         marginBottom: 20,
-      },
-      taskItem: {
+    },
+    taskItem: {
         width: "90%",
         marginBottom: 15,
-      },
-      title: {
+    },
+    title: {
         fontSize: 24,
         textAlign: "center",
         marginBottom: 10,
         marginTop: 40,
-      },
-      taskPressable: {
+    },
+    taskPressable: {
         width: "100%",
-      },
+    },
 });

@@ -27,8 +27,10 @@ import SideButtons from '../components/SideButtons';
 import LoadingAnimation from '../components/LoadingAnimation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
-const MaterialsScreen = ({ navigation, route }:{ navigation:any, route:any }) => {
+const MaterialsScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const [materials, setMaterials] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -86,21 +88,36 @@ const MaterialsScreen = ({ navigation, route }:{ navigation:any, route:any }) =>
   const renderImageOrVideo = ({ item }) => (
     <TouchableOpacity style={styles.materialBox} onPress={() => openMaterial(item)}>
       {item.contentType.startsWith('image/') && (
-        <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
+        <View style={styles.nameContainer}>
+          <Image source={{ uri: item.downloadURL }} style={styles.materialImage} />
+          <Text style={styles.materialName}>
+            {item.name}
+          </Text>
+        </View>
       )}
       {item.contentType.startsWith('video/') && (
-        <Video
-          source={{ uri: item.downloadURL }}
-          style={styles.video}
-          useNativeControls
-        />
+        <View style={styles.nameContainer}>
+          <Video
+            source={{ uri: item.downloadURL }}
+            style={styles.video}
+            useNativeControls
+          />
+          <Text style={styles.materialName}>
+            {item.name}
+          </Text>
+        </View>
       )}
     </TouchableOpacity>
   );
 
   const renderPDF = ({ item }) => (
-    <TouchableOpacity style={styles.pdfContainer} onPress={() => openMaterial(item)}>
-      <Text style={styles.pdfLink}>{item.name}</Text>
+    <TouchableOpacity style={[styles.materialBox,]} onPress={() => openMaterial(item)}>
+      <View style={[styles.nameContainer, { minWidth: 230 }]}>
+        <Ionicons name="book" size={150} color="#D32F2F" style={{ alignSelf: "center" }}></Ionicons>
+        <Text style={styles.materialName}>
+          {item.name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -153,77 +170,93 @@ const MaterialsScreen = ({ navigation, route }:{ navigation:any, route:any }) =>
   const pdfMaterials = materials.filter(material => material.contentType === 'application/pdf');
 
   return (
-    <SafeAreaView style={{ backgroundColor: settings.colorForBackground, flex: 1 }}>
-      <View style={styles.header}>
-        <CurrentDate settings={settings} />
-        <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
-          <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        ListHeaderComponent={() => (
-          <>
-          <Text style={[styles.sectionTitle, { fontSize: settings.fontSize + 6, fontFamily: settings.font, marginBottom: 35 }]}>Instrukcije</Text>
-            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font }]}>Slike</Text>
-            <FlatList
-              data={imageMaterials}
-              renderItem={renderImageOrVideo}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style = {{marginLeft: 15}}
-            />
-            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>Videozapisi</Text>
-            <FlatList
-              data={videoMaterials}
-              renderItem={renderImageOrVideo}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style = {{marginLeft: 15}}
-            />
-            <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>PDF dokumenti</Text>
-          </>
-        )}
-        data={pdfMaterials}
-        renderItem={renderPDF}
-        keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.pdfList}
-      />
-      <SideButtons onChatPress={handleChatPress} onSOSPress={handleSOSPress} />
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>&times;</Text>
+    <LinearGradient
+      colors={["#B7F2F2", settings.colorForBackground]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.header}>
+          <CurrentDate settings={settings} />
+          <TouchableOpacity style={styles.logoutButton} onPress={alertFunction}>
+            <SimpleLineIcons name="logout" size={33}></SimpleLineIcons>
           </TouchableOpacity>
-          {selectedMaterial && (
-            <View style={styles.modalContent}>
-              {selectedMaterial.contentType.startsWith('image/') && (
-                <Image source={{ uri: selectedMaterial.downloadURL }} style={styles.modalImage} />
-              )}
-              {selectedMaterial.contentType.startsWith('video/') && (
-                <Video
-                  source={{ uri: selectedMaterial.downloadURL }}
-                  style={styles.modalImage}
-                  useNativeControls
-                />
-              )}
-              {selectedMaterial.contentType === 'application/pdf' && (
-                <TouchableOpacity onPress={() => Linking.openURL(selectedMaterial.downloadURL)}>
-                  <Text style={styles.pdfLink}>{selectedMaterial.name}</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
         </View>
-      </Modal>
-    </SafeAreaView>
+        <FlatList
+          contentContainerStyle={{
+            paddingBottom: 100, // Add enough padding for the progress bar and bottom bar
+          }}
+          ListHeaderComponent={() => (
+            <>
+              <Text style={[styles.sectionTitle, { fontSize: settings.fontSize + 6, fontFamily: settings.font, marginBottom: 35 }]}>Instrukcije</Text>
+              <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font }]}>Slike</Text>
+              <FlatList
+                data={imageMaterials}
+                renderItem={renderImageOrVideo}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginLeft: 15 }}
+              />
+              <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>Videozapisi</Text>
+              <FlatList
+                data={videoMaterials}
+                renderItem={renderImageOrVideo}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginLeft: 15 }}
+              />
+              <Text style={[styles.sectionTitle, { fontSize: settings.fontSize, fontFamily: settings.font, marginTop: 25 }]}>PDF dokumenti</Text>
+              <FlatList
+                data={pdfMaterials}
+                renderItem={renderPDF}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsVerticalScrollIndicator={false}
+                style={{ marginLeft: 15 }}
+              >
+              </FlatList>
+            </>
+          )}
+          data={[]}
+          renderItem={renderPDF}
+          keyExtractor={() => null}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>&times;</Text>
+            </TouchableOpacity>
+            {selectedMaterial && (
+              <View style={styles.modalContent}>
+                {selectedMaterial.contentType.startsWith('image/') && (
+                  <Image source={{ uri: selectedMaterial.downloadURL }} style={styles.modalImage} />
+                )}
+                {selectedMaterial.contentType.startsWith('video/') && (
+                  <Video
+                    source={{ uri: selectedMaterial.downloadURL }}
+                    style={styles.modalImage}
+                    useNativeControls
+                  />
+                )}
+                {selectedMaterial.contentType === 'application/pdf' && (
+                  <TouchableOpacity onPress={() => Linking.openURL(selectedMaterial.downloadURL)}>
+                    <Text style={styles.pdfLink}>{selectedMaterial.name}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -243,17 +276,15 @@ const styles = StyleSheet.create({
   materialBox: {
     marginBottom: 15,
     alignItems: 'center',
-  },
-  pdfContainer: {
-    marginBottom: 15,
-    alignItems: 'flex-start',
-    paddingHorizontal: 25,
+    padding: 15,
   },
   materialImage: {
     width: '100%',
     height: 150,
     aspectRatio: 16 / 9,
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    padding: 20,
+
   },
   pdfLink: {
     marginTop: 5,
@@ -281,6 +312,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 30,
     color: 'white',
+    marginTop: 50
   },
   modalContent: {
     alignItems: 'center',
@@ -294,11 +326,30 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   video: {
-    width: '100%',
+    width: '50%',
     height: 150,
     aspectRatio: 16 / 9,
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    marginTop: 10
   },
+  nameContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 10,
+    minHeight: 200,
+    justifyContent: "space-between",
+  },
+  materialName: {
+    marginBottom: 10, // Space between image and name
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
+    textAlign: "center",
+  }
 });
 
 export default MaterialsScreen;
